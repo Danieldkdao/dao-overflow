@@ -7,24 +7,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import Image from "next/image";
 import { useEffect, useState } from "react";
+import { LaptopIcon, MoonIcon, SunIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const themes = [
   {
     value: "light",
-    icon: "sun.svg",
-    label: "Light",
+    icon: SunIcon,
   },
   {
     value: "dark",
-    icon: "moon.svg",
-    label: "Dark",
+    icon: MoonIcon,
   },
   {
     value: "system",
-    icon: "computer.svg",
-    label: "System",
+    icon: LaptopIcon,
   },
 ];
 
@@ -45,27 +43,23 @@ export const ThemeToggle = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <Image
-          src={`/icons/${activeTheme === "light" ? "sun.svg" : activeTheme === "dark" ? "moon.svg" : "computer.svg"}`}
-          alt="Theme icon"
-          height={30}
-          width={30}
-        />
+        {activeTheme === "light" ? (
+          <SunIcon className="text-primary fill-primary size-8" />
+        ) : activeTheme === "dark" ? (
+          <MoonIcon className="text-primary fill-primary size-8" />
+        ) : (
+          <LaptopIcon className="text-primary size-8" />
+        )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent align="end">
         {themes.map((t) => (
           <DropdownMenuItem
             onClick={() => setTheme(t.value)}
             key={t.value}
             className="flex items-center gap-3"
           >
-            <Image
-              src={`/icons/${t.icon}`}
-              alt={`${t.value} mode icon`}
-              height={20}
-              width={20}
-            />
-            <label className="font-medium">{t.label}</label>
+            <t.icon className={cn(activeTheme === t.value && "text-primary fill-primary")}/>
+            <label className={cn(activeTheme === t.value && "text-primary font-semibold", "font-medium capitalize")}>{t.value}</label>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
