@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 const themes = [
   {
@@ -29,6 +30,15 @@ const themes = [
 
 export const ThemeToggle = () => {
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const [pending, setPending] = useState(true);
+
+  useEffect(() => {
+    setPending(false);
+  }, []);
+
+  if (pending) {
+    return null;
+  }
 
   const activeTheme = theme === "system" ? "system" : (resolvedTheme ?? theme);
 
@@ -44,7 +54,11 @@ export const ThemeToggle = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {themes.map((t) => (
-          <DropdownMenuItem onClick={() => setTheme(t.value)} key={t.value} className="flex items-center gap-3">
+          <DropdownMenuItem
+            onClick={() => setTheme(t.value)}
+            key={t.value}
+            className="flex items-center gap-3"
+          >
             <Image
               src={`/icons/${t.icon}`}
               alt={`${t.value} mode icon`}
