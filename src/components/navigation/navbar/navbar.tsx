@@ -1,15 +1,20 @@
+"use client"
+
 import Image from "next/image";
 import { Input } from "../../ui/input";
 import { ThemeToggle } from "../../theme-toggle";
 import { SearchIcon } from "lucide-react";
 import { SidebarSheet } from "../sidebar/sidebar-sheet";
 import { NavbarUser } from './navbar-user';
+import { useTheme } from "next-themes";
 
 export const Navbar = () => {
+  const { theme } = useTheme();
+  
   return (
     <div className="flex items-center justify-between py-4 px-6 border-b bg-sidebar">
       <Image
-        src="/images/logo-dark.svg"
+        src={theme === "light" ? "/images/logo-light.svg" : "/images/logo-dark.svg"}
         alt="Logo image"
         width={200}
         height={100}

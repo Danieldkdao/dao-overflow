@@ -62,7 +62,7 @@ export const Navlinks = () => {
           <Link key={link.label} href={link.href}>
             <div
               className={cn(
-                "px-2 py-3 rounded-lg flex items-center gap-2",
+                "px-2 py-3 rounded-lg flex items-center gap-3",
                 isActive
                   ? "bg-linear-to-r from-primary/80 to-primary/60"
                   : "transition hover:bg-primary/20",
