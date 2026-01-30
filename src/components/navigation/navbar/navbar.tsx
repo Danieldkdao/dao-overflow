@@ -1,12 +1,13 @@
 import Image from "next/image";
-import { Input } from "./ui/input";
-import { ThemeToggle } from "./theme-toggle";
-import { MenuIcon } from "lucide-react";
-import { Button } from "./ui/button";
+import { Input } from "../../ui/input";
+import { ThemeToggle } from "../../theme-toggle";
+import { SearchIcon } from "lucide-react";
+import { SidebarSheet } from "../sidebar/sidebar-sheet";
+import { NavbarUser } from './navbar-user';
 
 export const Navbar = () => {
   return (
-    <div className="flex items-center justify-between py-4 px-6">
+    <div className="flex items-center justify-between py-4 px-6 border-b bg-sidebar">
       <Image
         src="/images/logo-dark.svg"
         alt="Logo image"
@@ -22,20 +23,14 @@ export const Navbar = () => {
         className="lg:hidden"
       />
       <div className="hidden md:flex p-2 bg-input rounded-lg items-center flex-1 max-w-[550px]">
-        <Image
-          src="/icons/search.svg"
-          alt="Search icon"
-          width={20}
-          height={20}
-        />
+        <SearchIcon />
         <Input className="text-lg shadow-none border-none focus-visible:border-none focus-visible:ring-0" />
       </div>
 
       <div className="flex items-center gap-4">
         <ThemeToggle />
-        <Button size="icon" variant="ghost" className="md:hidden">
-          <MenuIcon className="size-8"/>
-        </Button>
+        <NavbarUser />
+        <SidebarSheet />
       </div>
     </div>
   );

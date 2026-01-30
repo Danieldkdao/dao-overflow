@@ -24,15 +24,15 @@ export default function RootLayout({
       <body
         className={`${outfitSans.variable} ${outfitSans.className} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableColorScheme
-          disableTransitionOnChange
-        >
-          {children}
-          <Toaster />
-        </ThemeProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableColorScheme
+            disableTransitionOnChange
+          >
+            {children}
+            <Toaster />
+          </ThemeProvider>
       </body>
     </html>
   );

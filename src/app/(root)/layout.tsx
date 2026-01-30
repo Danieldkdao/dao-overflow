@@ -1,11 +1,17 @@
-import { Navbar } from "@/components/navbar";
+import { LeftSidebar } from "@/components/navigation/sidebar/left-sidebar";
+import { Navbar } from "@/components/navigation/navbar/navbar";
+import { RightSidebar } from "@/components/navigation/right-sidebar";
 import { ReactNode } from "react";
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <div>
+    <div className="flex flex-col w-full h-screen">
       <Navbar />
-      {children}
+      <div className="flex flex-1 h-full overflow-hidden">
+        <LeftSidebar />
+        <div className="flex-1 overflow-y-auto">{children}</div>
+        <RightSidebar />
+      </div>
     </div>
   );
 };
