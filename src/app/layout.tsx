@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
+import { NuqsAdapter } from "nuqs/adapters/next";
 
 export const metadata: Metadata = {
   title: "Dao Overflow",
@@ -20,10 +21,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${outfitSans.variable} ${outfitSans.className} antialiased`}
-      >
+    <NuqsAdapter>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={`${outfitSans.variable} ${outfitSans.className} antialiased`}
+        >
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -33,7 +35,8 @@ export default function RootLayout({
             {children}
             <Toaster />
           </ThemeProvider>
-      </body>
-    </html>
+        </body>
+      </html>
+    </NuqsAdapter>
   );
 }

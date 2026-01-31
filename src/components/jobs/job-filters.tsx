@@ -1,0 +1,32 @@
+"use client";
+
+import { useJobFilters } from "@/hooks/use-job-filters";
+import { SearchInput } from "../search-input";
+import { CountrySelect } from "./country-select";
+import { useRouter } from "next/navigation";
+
+export const JobFilters = ({ countries }: { countries: string[] }) => {
+  const [filters, setFilters] = useJobFilters();
+  const router = useRouter();
+
+  return (
+    <div className="flex gap-4 mb-8">
+      <SearchInput
+        placeholder="Job title, company, or keywords"
+        value={filters.query}
+        onSearchAction={(value: string) => {
+          setFilters({ query: value, country: filters.country, page: 1 });
+          router.refresh();
+        }}
+      />
+      <CountrySelect
+        options={countries}
+        value={filters.country}
+        onChange={(value: string) => {
+          setFilters({ query: filters.query, country: value, page: 1 });
+          router.refresh();
+        }}
+      />
+    </div>
+  );
+};

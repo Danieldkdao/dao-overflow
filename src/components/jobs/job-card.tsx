@@ -188,7 +188,7 @@ export const JobCard = ({
           </Link>
         </div>
         <div className="flex flex-col gap-2">
-          <div className="space-y-1">
+          <div className="space-y-1 overflow-hidden">
             <h1 className="text-xl font-semibold line-clamp-1">{jobTitle}</h1>
             <JobLocation
               jobCity={jobCity}

@@ -1,4 +1,6 @@
-export const data = [
+import { Job } from "@/lib/types";
+
+export const data: Job[] = [
   {
     job_id: "OQJQplUwXeDqgXT6AAAAAA==",
     job_title: "Full Stack Developer (DoD Secret)",
