@@ -9,7 +9,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       <Navbar />
       <div className="flex flex-1 h-full overflow-hidden">
         <LeftSidebar />
-        <div className="flex-1 bg-red-400 overflow-y-auto">{children}</div>
+        <div className="flex-1 overflow-y-auto p-5">{children}</div>
         <RightSidebar />
       </div>
     </div>

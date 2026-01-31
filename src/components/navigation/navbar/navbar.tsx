@@ -27,7 +27,7 @@ export const Navbar = () => {
         height={35}
         className="lg:hidden"
       />
-      <div className="hidden md:flex p-2 bg-input rounded-lg items-center flex-1 max-w-[550px]">
+      <div className="hidden md:flex p-2 bg-input/60 rounded-lg items-center flex-1 max-w-[550px]">
         <SearchIcon />
         <Input className="text-lg shadow-none border-none focus-visible:border-none focus-visible:ring-0" />
       </div>
