@@ -5,13 +5,14 @@ type UserAvatarProps = {
   name: string;
   image: string | undefined | null;
   className?: string;
+  textSize?: string;
 };
 
-export const UserAvatar = ({ name, image, className }: UserAvatarProps) => {
+export const UserAvatar = ({ name, image, className, textSize }: UserAvatarProps) => {
   return (
     <Avatar className={cn(className)}>
       <AvatarImage src={image ?? ""} alt={`${name} profile image`} />
-      <AvatarFallback>
+      <AvatarFallback className={textSize}>
         {name
           .split(" ")
           .map((part) => part[0].toUpperCase())

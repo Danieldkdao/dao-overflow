@@ -1,12 +1,18 @@
-import { parseAsString, useQueryStates, parseAsInteger } from "nuqs";
+import { communityFilters } from "@/lib/constants";
+import {
+  parseAsString,
+  useQueryStates,
+  parseAsInteger,
+  parseAsStringEnum,
+} from "nuqs";
 
-export const useJobFilters = () => {
+export const useCommunityFilters = () => {
   return useQueryStates(
     {
       query: parseAsString
         .withDefault("")
         .withOptions({ clearOnDefault: true }),
-      country: parseAsString
+      filter: parseAsStringEnum([...communityFilters])
         .withDefault("")
         .withOptions({ clearOnDefault: true }),
       page: parseAsInteger.withDefault(1).withOptions({ clearOnDefault: true }),

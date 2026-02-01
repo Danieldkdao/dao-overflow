@@ -5,20 +5,16 @@ import { JobCard } from "./job-card";
 import { Job } from "@/lib/types";
 import { Pagination } from "../pagination";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 export const JobViewClient = ({ jobs }: { jobs: Job[] }) => {
   const [filters, setFilters] = useJobFilters();
-  const router = useRouter();
 
   const handlePagination = (dir: "prev" | "next") => {
     if (dir === "prev" && filters.page > 1) {
       setFilters({ ...filters, page: filters.page - 1 });
-      router.refresh();
     }
     if (dir === "next" && jobs.length === 10) {
       setFilters({ ...filters, page: filters.page + 1 });
-      router.refresh();
     }
   };
 
