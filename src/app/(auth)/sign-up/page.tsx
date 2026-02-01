@@ -49,11 +49,11 @@ const SignUpPage = () => {
   const handleSignUp = async (data: FormType) => {
     await authClient.signUp.email({
       ...data,
-      callbackURL: "/",
+      callbackURL: "/onboarding",
       fetchOptions: {
         onSuccess: () => {
           toast.success("Account created successfully!");
-          router.push("/");
+          router.push("/onboarding");
         },
         onError: (err) => {
           toast.error(err.error.message ?? "Something went wrong");
@@ -66,10 +66,11 @@ const SignUpPage = () => {
     setSocialSignUpLoading(true);
     await authClient.signIn.social({
       provider,
-      callbackURL: "/",
+      callbackURL: "/onboarding",
       fetchOptions: {
         onSuccess: () => {
           setSocialSignUpLoading(false);
+          router.push("/onboarding");
         },
         onError: (err) => {
           setSocialSignUpLoading(false);

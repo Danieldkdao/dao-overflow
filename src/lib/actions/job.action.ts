@@ -27,6 +27,7 @@ export const getCountries = async () => {
 
 export const getJobs = async (filters: JobFilters) => {
   const { query, page } = filters;
+  return []
   const response = await fetch(
     `https://api.openwebninja.com/jsearch/search?query=${query}&page=${page}`,
     {
