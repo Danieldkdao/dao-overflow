@@ -6,8 +6,9 @@ import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { LoadingState } from "@/components/loading-state";
+import '@mdxeditor/editor/style.css'
 
-const RootLayout = async ({ children }: { children: ReactNode }) => {
+const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <Suspense fallback={<RootLayoutFallback />}>
       <RootLayoutSuspense>{children}</RootLayoutSuspense>

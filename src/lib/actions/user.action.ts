@@ -85,7 +85,7 @@ export const fetchUsers = async (
     .from(user)
     .where(
       query && query.trim() === "" ? undefined : ilike(user.name, `%${query}%`),
-    )
+    );
 
   const hasPrevPage = page > 1;
   const hasNextPage = page * PAGE_SIZE < userCount.count;
@@ -99,4 +99,11 @@ export const fetchUsers = async (
       totalPages,
     },
   };
+};
+
+export const checkUserAuthed = async () => {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) return null;
+  
+  return session;
 };

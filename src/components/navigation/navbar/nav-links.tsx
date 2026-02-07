@@ -46,7 +46,7 @@ const links = [
   },
   {
     label: "Ask a question",
-    href: "/new-question",
+    href: "/ask-question",
     icon: CircleQuestionMarkIcon,
   },
 ];
