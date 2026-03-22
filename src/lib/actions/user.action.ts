@@ -3,10 +3,11 @@
 import { headers } from "next/headers";
 import { auth } from "../auth/auth";
 import { db } from "@/db/db";
-import { user } from "@/db/schema";
-import { and, asc, count, desc, eq, ilike, isNull } from "drizzle-orm";
-import { PAGE_SIZE } from "../constants";
-import { communityFilters } from "../constants";
+import { QuestionTable, QuestionTagTable, TagTable, user } from "@/db/schema";
+import { and, asc, count, desc, eq, ilike, isNull, sql } from "drizzle-orm";
+import { PAGE_SIZE, communityFilters } from "../constants";
+import { getTableColumns } from "drizzle-orm";
+import { GetActionOutput } from "../types";
 
 export const onboardUser = async (username: string) => {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -62,20 +63,39 @@ export const fetchUsers = async (
     old_users: [asc(user.createdAt), asc(user.id)],
     // todo: add the amount of questions created/answered, tags
     top_contributors: [],
-    "": [desc(user.createdAt), desc(user.id)],
   };
 
-  const filterOrderBy =
-    filter in filterMap ? filterMap[filter] : filterMap.new_users;
+  const filterMapResult = filterMap[filter];
 
   const users = await db
-    .select()
+    .select({
+      ...getTableColumns(user),
+      topTags: sql<{ id: string; name: string }[]>`(
+        SELECT COALESCE(
+          jsonb_agg(
+            jsonb_build_object(
+              'id', top_tags.tag_id,
+              'name', top_tags.tag_name
+            )
+          ),
+          '[]'::jsonb
+        )
+        FROM (
+          SELECT tt.id AS tag_id, tt.name AS tag_name
+          FROM ${QuestionTable} qt
+          INNER JOIN ${QuestionTagTable} qtt ON qtt.question_id = qt.id
+          INNER JOIN ${TagTable} tt ON tt.id = qtt.tag_id
+          WHERE qt.user_id = "user"."id"
+          GROUP BY tt.id, tt.name
+          ORDER BY COUNT(*) DESC, tt.name ASC
+          LIMIT 3
+        ) as top_tags
+      )`,
+    })
     .from(user)
-    .where(
-      query && query.trim() === "" ? undefined : ilike(user.name, `%${query}%`),
-    )
+    .where(query.trim() ? ilike(user.name, `%${query}%`) : undefined)
     .offset(offset)
-    .orderBy(...filterOrderBy)
+    .orderBy(...filterMapResult)
     .limit(PAGE_SIZE);
 
   const [userCount] = await db
@@ -101,9 +121,11 @@ export const fetchUsers = async (
   };
 };
 
+export type GetUsersOutput = GetActionOutput<typeof fetchUsers>;
+
 export const checkUserAuthed = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) return null;
-  
+
   return session;
 };

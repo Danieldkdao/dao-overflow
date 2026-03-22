@@ -1,3 +1,7 @@
+export type GetActionOutput<T extends (...args: any) => any> = Awaited<
+  ReturnType<T>
+>;
+
 export type ApplyOption = {
   publisher: string;
   apply_link: string;

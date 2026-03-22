@@ -18,13 +18,21 @@ export const Pagination = ({
   return (
     <div className="flex items-center justify-between">
       <p>
-        {currentPage} of {totalPages === 0 ? "NA" : totalPages} pages
+        {currentPage} of {totalPages === 0 ? 1 : totalPages} pages
       </p>
       <div className="flex items-center gap-2">
-        <Button disabled={!hasPrevPage} size="sm" onClick={() => handlePagination("prev")}>
+        <Button
+          disabled={!hasPrevPage}
+          size="sm"
+          onClick={() => handlePagination("prev")}
+        >
           Prev
         </Button>
-        <Button size="sm" disabled={!hasNextPage} onClick={() => handlePagination("next")}>
+        <Button
+          size="sm"
+          disabled={!hasNextPage}
+          onClick={() => handlePagination("next")}
+        >
           Next
         </Button>
       </div>

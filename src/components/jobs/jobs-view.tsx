@@ -1,7 +1,7 @@
 import { getCountries, getJobs, getLocation } from "@/lib/actions/job.action";
 import { Suspense } from "react";
 import { SearchParams } from "nuqs";
-import { loadSearchParams } from "./params";
+import { loadSearchParams } from "../../lib/params/job-params";
 import { JobFilters } from "./job-filters";
 import { JobViewClient } from "./job-view-client";
 import { Job } from "@/lib/types";

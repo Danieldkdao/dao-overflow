@@ -1,4 +1,4 @@
-import { communityFilters } from "@/lib/constants";
+import { homeFilters } from "@/lib/constants";
 import {
   parseAsString,
   useQueryStates,
@@ -6,14 +6,14 @@ import {
   parseAsStringEnum,
 } from "nuqs";
 
-export const useCommunityFilters = () => {
+export const useHomeFilters = () => {
   return useQueryStates(
     {
       query: parseAsString
         .withDefault("")
         .withOptions({ clearOnDefault: true }),
-      filter: parseAsStringEnum([...communityFilters])
-        .withDefault("new_users")
+      filter: parseAsStringEnum([...homeFilters, ""])
+        .withDefault("")
         .withOptions({
           clearOnDefault: true,
         }),

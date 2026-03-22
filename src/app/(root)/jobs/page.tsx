@@ -8,7 +8,7 @@ const JobsPage = ({
 }) => {
   return (
     <div className="space-y-4">
-      <h1 className="text-4xl font-bold">Jobs</h1>
+      <h1 className="text-3xl font-bold">Jobs</h1>
       <p className="text-sm">Click on each job for more information</p>
       <JobsView searchParams={searchParams} />
     </div>

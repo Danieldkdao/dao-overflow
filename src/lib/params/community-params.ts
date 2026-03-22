@@ -9,8 +9,10 @@ import {
 export const filterSearchParams = {
   query: parseAsString.withDefault("").withOptions({ clearOnDefault: true }),
   filter: parseAsStringEnum([...communityFilters])
-    .withDefault("")
-    .withOptions({ clearOnDefault: true }),
+    .withDefault("new_users")
+    .withOptions({
+      clearOnDefault: true,
+    }),
   page: parseAsInteger.withDefault(1).withOptions({ clearOnDefault: true }),
 };
 

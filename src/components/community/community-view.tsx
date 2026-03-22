@@ -1,6 +1,6 @@
 import { SearchParams } from "nuqs";
 import { Suspense } from "react";
-import { loadSearchParams } from "./params";
+import { loadSearchParams } from "../../lib/params/community-params";
 import { fetchUsers } from "@/lib/actions/user.action";
 import { CommunityFilters } from "./community-filters";
 import { CommunityViewClient } from "./community-view-client";

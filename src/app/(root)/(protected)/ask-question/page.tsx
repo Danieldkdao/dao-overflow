@@ -61,7 +61,7 @@ const AskQuestionPage = () => {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-4xl font-bold">Ask a question</h1>
+      <h1 className="text-3xl font-bold">Ask a question</h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleAskQuestion)}
