@@ -19,4 +19,11 @@ export const QUESTION_ANSWERS_FILTERS = [
   "most-recent",
   "oldest",
 ] as const;
+export const QUESTIONS_FILTERS = [
+  "most-recent",
+  "oldest",
+  "most-viewed",
+  "most-voted",
+  "most-answered",
+] as const;
 export const UNAUTHED_MESSAGE = "Please sign in to access this feature.";

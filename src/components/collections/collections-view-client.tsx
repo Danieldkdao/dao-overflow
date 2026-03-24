@@ -1,12 +1,16 @@
 "use client";
 
-import { useHomeFilters } from "@/hooks/use-home-filters";
-import type { GetQuestionsOutputType } from "@/lib/actions/question.action";
 import { Pagination } from "../pagination";
 import { QuestionsListClient } from "../questions/questions-list-client";
+import { useQuestionFilters } from "@/hooks/use-question-filters";
+import { GetCollectionActionOutputType } from "@/lib/actions/collections.action";
 
-export const HomeViewClient = ({ data }: { data: GetQuestionsOutputType }) => {
-  const [filters, setFilters] = useHomeFilters();
+export const CollectionsViewClient = ({
+  data,
+}: {
+  data: GetCollectionActionOutputType;
+}) => {
+  const [filters, setFilters] = useQuestionFilters();
 
   const handlePagination = (dir: "prev" | "next") => {
     if (dir === "next" && data?.metadata.hasNextPage) {

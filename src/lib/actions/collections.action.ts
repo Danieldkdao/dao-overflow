@@ -1,10 +1,31 @@
 "use server";
 
 import { db } from "@/db/db";
-import { UNAUTHED_MESSAGE } from "../constants";
+import { PAGE_SIZE, QUESTIONS_FILTERS, UNAUTHED_MESSAGE } from "../constants";
 import { checkUserAuthed } from "./user.action";
-import { CollectionTable } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import {
+  AnswerTable,
+  CollectionTable,
+  QuestionTable,
+  QuestionTagTable,
+  QuestionVoteTable,
+  TagTable,
+  user,
+} from "@/db/schema";
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  ilike,
+  SQL,
+  sql,
+} from "drizzle-orm";
+import { auth } from "../auth/auth";
+import { GetActionOutput } from "../types";
+import { headers } from "next/headers";
 
 export const updateCollectionAction = async (questionId: string) => {
   try {
@@ -46,3 +67,117 @@ export const updateCollectionAction = async (questionId: string) => {
     };
   }
 };
+
+type GetCollectionActionProps = {
+  query: string;
+  page: number;
+  filter: (typeof QUESTIONS_FILTERS)[number];
+};
+
+export const getCollectionAction = async (
+  filters: GetCollectionActionProps,
+) => {
+  const { query, page, filter } = filters;
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) return null;
+  if (page < 1) return null;
+
+  const offset = (page - 1) * PAGE_SIZE;
+
+  const voteCount = sql<number>`(
+        SELECT COUNT(*)
+        FROM ${QuestionVoteTable} qvt
+        JOIN ${QuestionTable} qt ON qt.id = qvt.question_id
+        WHERE qt.id = ${QuestionTable.id}
+          AND qvt.type = ${"up"}
+      )`;
+
+  const answerCount = sql<number>`(
+        SELECT COUNT(*)
+        FROM ${AnswerTable} ant
+        JOIN ${QuestionTable} qt ON qt.id = ant.question_id
+        WHERE qt.id = ${QuestionTable.id}
+      )`;
+
+  const filterMap: Record<(typeof QUESTIONS_FILTERS)[number], SQL<unknown>[]> =
+    {
+      "most-recent": [desc(QuestionTable.createdAt), desc(QuestionTable.id)],
+      oldest: [asc(QuestionTable.createdAt), asc(QuestionTable.id)],
+      "most-answered": [desc(answerCount), desc(QuestionTable.id)],
+      "most-viewed": [desc(QuestionTable.views), desc(QuestionTable.id)],
+      "most-voted": [desc(voteCount), desc(QuestionTable.id)],
+    };
+
+  const savedQuestions = await db
+    .select({
+      ...getTableColumns(QuestionTable),
+      user: getTableColumns(user),
+      voteCount: voteCount.as("voteCount"),
+      answerCount: answerCount.as("answerCount"),
+      tags: sql<{ id: string; name: string }[]>`
+        coalesce(
+          jsonb_agg(
+            jsonb_build_object(
+            'id', ${TagTable.id},
+            'name', ${TagTable.name}
+            )
+          ) FILTER (WHERE ${TagTable.id} IS NOT NULL),
+          '[]'::jsonb
+        )
+      `.as("tags"),
+    })
+    .from(QuestionTable)
+    .innerJoin(
+      CollectionTable,
+      eq(CollectionTable.questionId, QuestionTable.id),
+    )
+    .innerJoin(user, eq(user.id, QuestionTable.userId))
+    .leftJoin(
+      QuestionTagTable,
+      eq(QuestionTagTable.questionId, QuestionTable.id),
+    )
+    .leftJoin(TagTable, eq(TagTable.id, QuestionTagTable.tagId))
+    .where(
+      and(
+        eq(CollectionTable.userId, session.user.id),
+        query ? ilike(QuestionTable.title, `%${query}%`) : undefined,
+      ),
+    )
+    .groupBy(QuestionTable.id, user.id)
+    .orderBy(...filterMap[filter])
+    .offset(offset)
+    .limit(PAGE_SIZE);
+
+  const [questionCount] = await db
+    .select({
+      count: count(),
+    })
+    .from(QuestionTable)
+    .innerJoin(
+      CollectionTable,
+      eq(CollectionTable.questionId, QuestionTable.id),
+    )
+    .where(
+      and(
+        eq(CollectionTable.userId, session.user.id),
+        query ? ilike(QuestionTable.title, `%${query}%`) : undefined,
+      ),
+    );
+
+  const hasPrevPage = page > 1;
+  const hasNextPage = page * PAGE_SIZE < questionCount.count;
+  const totalPages = Math.floor(questionCount.count / PAGE_SIZE);
+
+  return {
+    questions: savedQuestions,
+    metadata: {
+      hasPrevPage,
+      hasNextPage,
+      totalPages,
+    },
+  };
+};
+
+export type GetCollectionActionOutputType = GetActionOutput<
+  typeof getCollectionAction
+>;

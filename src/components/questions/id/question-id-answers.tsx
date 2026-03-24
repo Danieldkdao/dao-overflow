@@ -49,7 +49,7 @@ export const QuestionIdAnswers = ({
       {answers.map((a) => (
         <QuestionAnswer key={a.id} answer={a} />
       ))}
-      {answers.length > PAGE_SIZE && (
+      {metadata.totalPages !== 0 && (
         <Pagination
           currentPage={filters.page}
           handlePagination={handlePagination}

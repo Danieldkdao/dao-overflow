@@ -1,3 +1,4 @@
+import { HomeFilters } from "@/components/home/home-filters";
 import { HomeView } from "@/components/home/home-view";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -16,6 +17,7 @@ const HomePage = ({
           <Button>Ask a question</Button>
         </Link>
       </div>
+      <HomeFilters />
       <HomeView searchParams={searchParams} />
     </div>
   );

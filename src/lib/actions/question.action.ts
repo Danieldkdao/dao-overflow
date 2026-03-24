@@ -18,7 +18,7 @@ import {
   PAGE_SIZE,
   QUESTION_ANSWERS_FILTERS,
 } from "../constants";
-import { and, asc, count, desc, eq, ilike, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, inArray, sql } from "drizzle-orm";
 import { getTableColumns } from "drizzle-orm";
 import { GetActionOutput } from "../types";
 
@@ -48,7 +48,7 @@ export const postQuestion = async ({
       })
       .returning();
 
-    const insertedTags = await db
+    await db
       .insert(TagTable)
       .values(
         tags.map((tag) => ({
@@ -58,8 +58,15 @@ export const postQuestion = async ({
       .onConflictDoNothing()
       .returning();
 
+    const tagIds = await db
+      .select({
+        id: TagTable.id,
+      })
+      .from(TagTable)
+      .where(inArray(TagTable.name, tags));
+
     await db.insert(QuestionTagTable).values(
-      insertedTags.map((tag) => ({
+      tagIds.map((tag) => ({
         tagId: tag.id,
         questionId: postedQuestion.id,
       })),
@@ -186,6 +193,7 @@ export const getTopQuestions = async () => {
 };
 
 export const getQuestion = async (questionId: string) => {
+  const session = await checkUserAuthed();
   const [questionToReturn] = await db
     .select({
       ...getTableColumns(QuestionTable),
@@ -232,7 +240,7 @@ export const getQuestion = async (questionId: string) => {
         SELECT ct.question_id
         FROM ${CollectionTable} ct
         WHERE ct.question_id = ${QuestionTable.id}
-          AND ct.user_id = ${user.id}
+          AND ct.user_id = ${session?.user.id}
         LIMIT 1
       )`.as("viewerCollection"),
     })

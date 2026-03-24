@@ -1,10 +1,9 @@
+import { Skeleton } from "@/components/ui/skeleton";
+import { fetchUsers } from "@/lib/actions/user.action";
 import { SearchParams } from "nuqs";
 import { Suspense } from "react";
 import { loadSearchParams } from "../../lib/params/community-params";
-import { fetchUsers } from "@/lib/actions/user.action";
-import { CommunityFilters } from "./community-filters";
 import { CommunityViewClient } from "./community-view-client";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export const CommunityView = ({
   searchParams,
@@ -13,7 +12,6 @@ export const CommunityView = ({
 }) => {
   return (
     <Suspense fallback={<CommunityViewSkeleton />}>
-      <CommunityFilters />
       <CommunityViewSuspense searchParams={searchParams} />
     </Suspense>
   );

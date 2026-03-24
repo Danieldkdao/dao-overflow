@@ -1,29 +1,29 @@
-import { getQuestions } from "@/lib/actions/question.action";
-import { loadSearchParams } from "@/lib/params/home-params";
+import { getCollectionAction } from "@/lib/actions/collections.action";
+import { loadSearchParams } from "@/lib/params/question-params";
 import { SearchParams } from "nuqs";
 import { Suspense } from "react";
 import { Skeleton } from "../ui/skeleton";
-import { HomeViewClient } from "./home-view-client";
+import { CollectionsViewClient } from "./collections-view-client";
 
-export const HomeView = ({
-  searchParams,
-}: {
+type CollectionsViewProps = {
   searchParams: Promise<SearchParams>;
-}) => {
+};
+
+export const CollectionsView = (props: CollectionsViewProps) => {
   return (
-    <Suspense fallback={<HomeViewLoading />}>
-      <HomeViewSuspense searchParams={searchParams} />
+    <Suspense fallback={<CollectionsLoading />}>
+      <CollectionsSuspense {...props} />
     </Suspense>
   );
 };
 
-const HomeViewLoading = () => {
+const CollectionsLoading = () => {
   return (
     <div className="w-full space-y-4">
-      <div className="grid grid-cols-1 gap-2">
+      <div className="grid grid-cols-1 gap-4">
         {Array.from({ length: 6 }).map((_, index) => (
           <div
-            key={`home-question-skeleton-${index}`}
+            key={`collection-question-skeleton-${index}`}
             className="bg-card rounded-lg p-6 border space-y-4"
           >
             <div className="space-y-3">
@@ -60,12 +60,9 @@ const HomeViewLoading = () => {
   );
 };
 
-const HomeViewSuspense = async ({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>;
-}) => {
+const CollectionsSuspense = async ({ searchParams }: CollectionsViewProps) => {
   const filters = await loadSearchParams(searchParams);
-  const data = await getQuestions(filters);
-  return <HomeViewClient data={data} />;
+  const data = await getCollectionAction(filters);
+
+  return <CollectionsViewClient data={data} />;
 };
