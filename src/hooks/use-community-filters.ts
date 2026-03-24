@@ -1,4 +1,4 @@
-import { communityFilters } from "@/lib/constants";
+import { COMMUNITY_FILTERS } from "@/lib/constants";
 import {
   parseAsString,
   useQueryStates,
@@ -12,7 +12,7 @@ export const useCommunityFilters = () => {
       query: parseAsString
         .withDefault("")
         .withOptions({ clearOnDefault: true }),
-      filter: parseAsStringEnum([...communityFilters])
+      filter: parseAsStringEnum([...COMMUNITY_FILTERS])
         .withDefault("new_users")
         .withOptions({
           clearOnDefault: true,

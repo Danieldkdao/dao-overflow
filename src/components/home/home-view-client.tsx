@@ -4,6 +4,7 @@ import { useHomeFilters } from "@/hooks/use-home-filters";
 import { Pagination } from "../pagination";
 import { QuestionCard } from "./question-card";
 import type { GetQuestionsOutputType } from "@/lib/actions/question.action";
+import { EmptyState } from "../empty-state";
 
 export const HomeViewClient = ({ data }: { data: GetQuestionsOutputType }) => {
   const [filters, setFilters] = useHomeFilters();
@@ -20,9 +21,14 @@ export const HomeViewClient = ({ data }: { data: GetQuestionsOutputType }) => {
   return (
     <div className="w-full space-y-4">
       <div className="grid grid-cols-1 gap-2">
-        {(data?.questions ?? []).map((q) => (
-          <QuestionCard key={q.id} question={q} />
-        ))}
+        {data?.questions.length ? (
+          data.questions.map((q) => <QuestionCard key={q.id} question={q} />)
+        ) : (
+          <EmptyState
+            title="No questions found"
+            description="We couldn't find any questions that match the applied filters. Try refreshing the page or adjusting your search."
+          />
+        )}
       </div>
       {data && (
         <Pagination

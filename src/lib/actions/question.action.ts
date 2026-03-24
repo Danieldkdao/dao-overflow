@@ -4,13 +4,20 @@ import { db } from "@/db/db";
 import { checkUserAuthed } from "./user.action";
 import {
   AnswerTable,
+  AnswerVoteTable,
+  CollectionTable,
   QuestionTable,
   QuestionTagTable,
   QuestionVoteTable,
   TagTable,
   user,
+  VoteType,
 } from "@/db/schema";
-import { homeFilters, PAGE_SIZE } from "../constants";
+import {
+  HOME_FILTERS,
+  PAGE_SIZE,
+  QUESTION_ANSWERS_FILTERS,
+} from "../constants";
 import { and, asc, count, desc, eq, ilike, sql } from "drizzle-orm";
 import { getTableColumns } from "drizzle-orm";
 import { GetActionOutput } from "../types";
@@ -68,7 +75,7 @@ export const postQuestion = async ({
 type GetQuestionsProps = {
   query: string;
   page: number;
-  filter: (typeof homeFilters)[number];
+  filter: (typeof HOME_FILTERS)[number];
 };
 
 export const getQuestions = async (filters: GetQuestionsProps) => {
@@ -77,7 +84,7 @@ export const getQuestions = async (filters: GetQuestionsProps) => {
   if (page < 1) return null;
   const offset = (page - 1) * PAGE_SIZE;
 
-  const filterMap = {
+  const filterMap: Record<(typeof HOME_FILTERS)[number], any> = {
     newest: [desc(QuestionTable.createdAt), desc(QuestionTable.id)],
     // todo: add recommended, frequent, unanswered filters
     recommended: undefined,
@@ -164,3 +171,168 @@ export const getQuestions = async (filters: GetQuestionsProps) => {
 };
 
 export type GetQuestionsOutputType = GetActionOutput<typeof getQuestions>;
+
+export const getQuestion = async (questionId: string) => {
+  const [questionToReturn] = await db
+    .select({
+      ...getTableColumns(QuestionTable),
+      user: getTableColumns(user),
+      tags: sql<{ id: string; name: string }[]>`
+        coalesce(
+          jsonb_agg(
+            jsonb_build_object(
+            'id', ${TagTable.id},
+            'name', ${TagTable.name}
+            )
+          ) FILTER (WHERE ${TagTable.id} IS NOT NULL),
+          '[]'::jsonb
+        )
+      `.as("tags"),
+      answerCount: sql<number>`(
+        SELECT COUNT(*)
+        FROM ${AnswerTable} ant
+        JOIN ${QuestionTable} qt ON qt.id = ant.question_id
+        WHERE qt.id = ${QuestionTable.id}
+      )`,
+      upVoteCount: sql<number>`(
+        SELECT COUNT(*)
+        FROM ${QuestionVoteTable} qvt
+        JOIN ${QuestionTable} qt ON qt.id = qvt.question_id
+        WHERE qt.id = ${QuestionTable.id}
+          AND qvt.type = ${"up"}
+      )`,
+      downVoteCount: sql<number>`(
+        SELECT COUNT(*)
+        FROM ${QuestionVoteTable} qvt
+        JOIN ${QuestionTable} qt ON qt.id = qvt.question_id
+        WHERE qt.id = ${QuestionTable.id}
+          AND qvt.type = ${"down"}
+      )`,
+      viewerVote: sql<VoteType | null>`(
+        SELECT qvt.type
+        FROM ${QuestionVoteTable} qvt
+        WHERE qvt.question_id = ${QuestionTable.id}
+          AND qvt.user_id = ${user.id}
+        LIMIT 1
+      )`.as("viewerVote"),
+      viewerCollection: sql<string | null>`(
+        SELECT ct.question_id
+        FROM ${CollectionTable} ct
+        WHERE ct.question_id = ${QuestionTable.id}
+          AND ct.user_id = ${user.id}
+        LIMIT 1
+      )`.as("viewerCollection"),
+    })
+    .from(QuestionTable)
+    .innerJoin(user, eq(user.id, QuestionTable.userId))
+    .leftJoin(
+      QuestionTagTable,
+      eq(QuestionTagTable.questionId, QuestionTable.id),
+    )
+    .leftJoin(TagTable, eq(TagTable.id, QuestionTagTable.tagId))
+    .where(eq(QuestionTable.id, questionId))
+    .groupBy(QuestionTable.id, user.id);
+
+  return questionToReturn ?? null;
+};
+
+export type GetQuestionOutputType = GetActionOutput<typeof getQuestion>;
+
+type GetQuestionsAnswersProps = {
+  questionId: string;
+  page: number;
+  filter: (typeof QUESTION_ANSWERS_FILTERS)[number];
+};
+
+export const getQuestionAnswers = async ({
+  questionId,
+  page,
+  filter,
+}: GetQuestionsAnswersProps) => {
+  const [existingQuestion] = await db
+    .select()
+    .from(QuestionTable)
+    .where(eq(QuestionTable.id, questionId));
+  if (!existingQuestion) return null;
+
+  const offset = (page - 1) * PAGE_SIZE;
+
+  const upVoteCount = sql<number>`(
+        SELECT COUNT(*)
+        FROM ${AnswerTable} asnt
+        JOIN ${AnswerVoteTable} avt ON avt.answer_id = asnt.id
+        WHERE asnt.id = ${AnswerTable.id}
+          AND avt.type = ${"up"}
+      )`;
+
+  const downVoteCount = sql<number>`(
+        SELECT COUNT(*)
+        FROM ${AnswerTable} asnt
+        JOIN ${AnswerVoteTable} avt ON avt.answer_id = asnt.id
+        WHERE asnt.id = ${AnswerTable.id}
+          AND avt.type = ${"down"}
+      )`;
+
+  const filterMap: Record<(typeof QUESTION_ANSWERS_FILTERS)[number], any> = {
+    "most-recent": [desc(AnswerTable.createdAt), desc(AnswerTable.id)],
+    oldest: [asc(AnswerTable.createdAt), asc(AnswerTable.id)],
+    "highest-upvotes": [desc(upVoteCount), desc(AnswerTable.id)],
+    "lowest-upvotes": [asc(upVoteCount), asc(AnswerTable.id)],
+  };
+
+  const filterResult = filterMap[filter];
+
+  const questionAnswers = await db
+    .select({
+      ...getTableColumns(AnswerTable),
+      user: getTableColumns(user),
+      upVoteCount: upVoteCount.as("upVoteCount"),
+      downVoteCount: downVoteCount.as("downVoteCount"),
+      viewerVote: sql<VoteType | null>`(
+        SELECT avt.type
+        FROM ${AnswerVoteTable} avt
+        WHERE avt.answer_id = ${AnswerTable.id}
+          AND avt.user_id = ${user.id}
+        LIMIT 1
+      )`.as("viewerVote"),
+    })
+    .from(AnswerTable)
+    .innerJoin(user, eq(user.id, AnswerTable.userId))
+    .where(eq(AnswerTable.questionId, questionId))
+    .offset(offset)
+    .orderBy(...filterResult)
+    .limit(PAGE_SIZE);
+
+  const [answerCount] = await db
+    .select({
+      count: count(),
+    })
+    .from(AnswerTable)
+    .where(eq(AnswerTable.questionId, questionId));
+
+  const hasPrevPage = page > 1;
+  const hasNextPage = page * PAGE_SIZE < answerCount.count;
+  const totalPages = Math.floor(answerCount.count / PAGE_SIZE);
+
+  return {
+    answers: questionAnswers,
+    metadata: {
+      hasPrevPage,
+      hasNextPage,
+      totalPages,
+    },
+  };
+};
+
+export type GetQuestionAnswersOutputType = GetActionOutput<
+  typeof getQuestionAnswers
+>;
+
+export const incrementQuestionViewCount = async (questionId: string) => {
+  await db
+    .update(QuestionTable)
+    .set({
+      views: sql`${QuestionTable.views} + 1`,
+    })
+    .where(eq(QuestionTable.id, questionId));
+};

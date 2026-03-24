@@ -5,7 +5,7 @@ import { QuestionTable } from "./question";
 import { AnswerVoteTable } from "./answer-vote";
 
 export const AnswerTable = pgTable("answers", {
-  id: uuid().primaryKey().notNull(),
+  id: uuid().primaryKey().defaultRandom(),
   userId: varchar("user_id")
     .references(() => user.id, { onDelete: "cascade" })
     .notNull(),

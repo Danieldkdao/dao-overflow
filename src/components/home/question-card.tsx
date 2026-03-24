@@ -3,6 +3,8 @@ import Link from "next/link";
 import { UserAvatar } from "../user-avatar";
 import { formatDistanceToNow } from "date-fns";
 import { MessageCircleIcon, ThumbsUpIcon } from "lucide-react";
+import { useMemo } from "react";
+import { returnNumberAbbr } from "@/lib/utils";
 
 export const QuestionCard = ({
   question,
@@ -11,6 +13,16 @@ export const QuestionCard = ({
     NonNullable<GetQuestionsOutputType>["questions"][number]
   >;
 }) => {
+  const formattedVoteCount = useMemo(() => {
+    return returnNumberAbbr(question.voteCount);
+  }, [question.voteCount]);
+  const formattedAnswerCount = useMemo(() => {
+    return returnNumberAbbr(question.answerCount);
+  }, [question.answerCount]);
+  const formattedViewCount = useMemo(() => {
+    return returnNumberAbbr(question.views);
+  }, [question.views]);
+
   return (
     <Link href={`/question/${question.id}`}>
       <div className="bg-card rounded-lg p-6 border space-y-4">
@@ -28,31 +40,34 @@ export const QuestionCard = ({
           </div>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center flex-wrap gap-1">
-            <UserAvatar
-              name={question.user.name}
-              image={question.user.image}
-              className="size-6"
-              textSize="text-xs"
-            />
-            <span className="text-sm font-medium">
-              {question.user.name} ● asked{" "}
-              {formatDistanceToNow(question.createdAt, { addSuffix: true })}
-            </span>
-          </div>
+        <div className="flex flex-col gap-2">
+          <Link href={`/profile/${question.user.id}`}>
+            <div className="flex items-center flex-wrap gap-1">
+              <UserAvatar
+                name={question.user.name}
+                image={question.user.image}
+                className="size-6"
+                textSize="text-xs"
+              />
+              <span className="text-sm font-medium">
+                {question.user.name} ● asked{" "}
+                {formatDistanceToNow(question.createdAt, { addSuffix: true })}
+              </span>
+            </div>
+          </Link>
+
           <div className="flex items-center flex-wrap gap-4">
             <div className="flex items-center gap-1">
               <ThumbsUpIcon className="size-4" />
-              <span className="text-sm">{question.voteCount} votes</span>
+              <span className="text-sm">{formattedVoteCount} votes</span>
             </div>
             <div className="flex items-center gap-1">
               <MessageCircleIcon className="size-4" />
-              <span className="text-sm">{question.answerCount} answers</span>
+              <span className="text-sm">{formattedAnswerCount} answers</span>
             </div>
             <div className="flex items-center gap-1">
               <ThumbsUpIcon className="size-4" />
-              <span className="text-sm">{0} views</span>
+              <span className="text-sm">{formattedViewCount} views</span>
             </div>
           </div>
         </div>

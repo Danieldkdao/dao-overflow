@@ -1,4 +1,4 @@
-import { homeFilters } from "@/lib/constants";
+import { HOME_FILTERS } from "@/lib/constants";
 import {
   parseAsString,
   useQueryStates,
@@ -12,7 +12,7 @@ export const useHomeFilters = () => {
       query: parseAsString
         .withDefault("")
         .withOptions({ clearOnDefault: true }),
-      filter: parseAsStringEnum([...homeFilters, ""])
+      filter: parseAsStringEnum([...HOME_FILTERS, ""])
         .withDefault("")
         .withOptions({
           clearOnDefault: true,

@@ -11,7 +11,8 @@ export const envServer = createEnv({
     GITHUB_CLIENT_ID: z.string().min(1),
     GITHUB_CLIENT_SECRET: z.string().min(1),
     JOB_SEARCH_API_KEY: z.string().min(1),
+    COHERE_API_KEY: z.string().min(1),
   },
   emptyStringAsUndefined: true,
   experimental__runtimeEnv: true,
-})
+});

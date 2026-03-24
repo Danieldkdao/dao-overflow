@@ -1,4 +1,4 @@
-import { homeFilters } from "../constants";
+import { HOME_FILTERS } from "../constants";
 import {
   createLoader,
   parseAsInteger,
@@ -8,7 +8,7 @@ import {
 
 export const filterSearchParams = {
   query: parseAsString.withDefault("").withOptions({ clearOnDefault: true }),
-  filter: parseAsStringEnum([...homeFilters, ""])
+  filter: parseAsStringEnum([...HOME_FILTERS, ""])
     .withDefault("")
     .withOptions({
       clearOnDefault: true,

@@ -5,7 +5,7 @@ import { auth } from "../auth/auth";
 import { db } from "@/db/db";
 import { QuestionTable, QuestionTagTable, TagTable, user } from "@/db/schema";
 import { and, asc, count, desc, eq, ilike, isNull, sql } from "drizzle-orm";
-import { PAGE_SIZE, communityFilters } from "../constants";
+import { PAGE_SIZE, COMMUNITY_FILTERS } from "../constants";
 import { getTableColumns } from "drizzle-orm";
 import { GetActionOutput } from "../types";
 
@@ -48,7 +48,7 @@ export const onboardUser = async (username: string) => {
   }
 };
 
-export type UserFilterType = (typeof communityFilters)[number];
+export type UserFilterType = (typeof COMMUNITY_FILTERS)[number];
 
 export const fetchUsers = async (
   page: number,

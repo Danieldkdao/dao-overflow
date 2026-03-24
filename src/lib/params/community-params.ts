@@ -1,4 +1,4 @@
-import { communityFilters } from "@/lib/constants";
+import { COMMUNITY_FILTERS } from "@/lib/constants";
 import {
   createLoader,
   parseAsInteger,
@@ -8,7 +8,7 @@ import {
 
 export const filterSearchParams = {
   query: parseAsString.withDefault("").withOptions({ clearOnDefault: true }),
-  filter: parseAsStringEnum([...communityFilters])
+  filter: parseAsStringEnum([...COMMUNITY_FILTERS])
     .withDefault("new_users")
     .withOptions({
       clearOnDefault: true,
