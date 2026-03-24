@@ -172,6 +172,19 @@ export const getQuestions = async (filters: GetQuestionsProps) => {
 
 export type GetQuestionsOutputType = GetActionOutput<typeof getQuestions>;
 
+export const getTopQuestions = async () => {
+  const questions = await db
+    .select({
+      id: QuestionTable.id,
+      title: QuestionTable.title,
+    })
+    .from(QuestionTable)
+    .orderBy(desc(QuestionTable.views), desc(QuestionTable.id))
+    .limit(5);
+
+  return questions;
+};
+
 export const getQuestion = async (questionId: string) => {
   const [questionToReturn] = await db
     .select({

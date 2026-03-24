@@ -4,7 +4,7 @@ import { QuestionTable } from "./question";
 
 export const TagTable = pgTable("tags", {
   id: uuid().primaryKey().defaultRandom(),
-  name: varchar("name").notNull(),
+  name: varchar("name").notNull().unique(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

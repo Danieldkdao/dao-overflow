@@ -20,7 +20,7 @@ export const HomeViewClient = ({ data }: { data: GetQuestionsOutputType }) => {
 
   return (
     <div className="w-full space-y-4">
-      <div className="grid grid-cols-1 gap-2">
+      <div className="grid grid-cols-1 gap-4">
         {data?.questions.length ? (
           data.questions.map((q) => <QuestionCard key={q.id} question={q} />)
         ) : (
