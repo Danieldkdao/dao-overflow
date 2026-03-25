@@ -151,9 +151,13 @@ const ProfileIdSuspense = async ({ params }: ProfileIdViewProps) => {
             )}
           </div>
         </div>
-        <Button variant="outline" size="lg" className="w-full md:w-auto">
-          Edit Profile
-        </Button>
+        {profileData.isCurrentUser && (
+          <Link href="/profile/edit">
+            <Button variant="outline" size="lg" className="w-full md:w-auto">
+              Edit Profile
+            </Button>
+          </Link>
+        )}
       </div>
       <div className="space-y-4">
         <h2 className="text-2xl font-bold">Stats</h2>

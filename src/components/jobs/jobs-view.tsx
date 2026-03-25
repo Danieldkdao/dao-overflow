@@ -6,6 +6,7 @@ import { JobFilters } from "./job-filters";
 import { JobViewClient } from "./job-view-client";
 import { Job } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SearchIcon, MapPinIcon, ChevronDownIcon } from "lucide-react";
 
 export const JobsView = ({
   searchParams,
@@ -23,13 +24,14 @@ const JobsViewLoading = () => {
   return (
     <div>
       <div className="flex gap-4 mb-8">
-        <div className="hidden md:flex px-2 py-1 bg-input rounded-lg items-center flex-1 max-w-[550px]">
-          <Skeleton className="size-6 rounded-full" />
-          <Skeleton className="h-6 flex-1 ml-2" />
+        <div className="hidden md:flex px-2 py-1 dark:bg-input/40 rounded-lg items-center flex-1">
+          <SearchIcon className="text-muted-foreground" />
+          <div className="h-9 w-full min-w-0 px-3 py-1 flex items-center"></div>
         </div>
-        <div className="flex items-center gap-2 h-11 px-3 rounded-md border bg-transparent w-fit">
-          <Skeleton className="size-4 rounded-full" />
-          <Skeleton className="h-4 w-28" />
+        <div className="border-input flex h-11 w-fit items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs">
+          <MapPinIcon className="size-4 text-muted-foreground shrink-0" />
+          <Skeleton className="h-4 w-24" />
+          <ChevronDownIcon className="size-4 opacity-50 shrink-0 text-muted-foreground" />
         </div>
       </div>
       <div className="space-y-4">
