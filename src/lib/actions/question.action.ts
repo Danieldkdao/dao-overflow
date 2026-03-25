@@ -214,6 +214,30 @@ export const getEditQuestion = async (questionId: string) => {
   return existingQuestion;
 };
 
+export const deleteQuestion = async (questionId: string) => {
+  const session = await checkUserAuthed();
+  if (!session) return { error: true, message: UNAUTHED_MESSAGE };
+
+  try {
+    const [deletedQuestion] = await db
+      .delete(QuestionTable)
+      .where(
+        and(
+          eq(QuestionTable.id, questionId),
+          eq(QuestionTable.userId, session.user.id),
+        ),
+      )
+      .returning();
+    if (!deletedQuestion) {
+      throw new Error("Failed to delete question.");
+    }
+    return { error: false, message: "Question deleted successfully!" };
+  } catch (error) {
+    console.error(error);
+    return { error: true, message: "Failed to delete question." };
+  }
+};
+
 type GetQuestionsProps = {
   query: string;
   page: number;

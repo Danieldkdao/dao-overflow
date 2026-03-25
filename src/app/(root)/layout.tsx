@@ -6,7 +6,7 @@ import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { LoadingState } from "@/components/loading-state";
-import '@mdxeditor/editor/style.css'
+import "@mdxeditor/editor/style.css";
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
@@ -36,7 +36,7 @@ const RootLayoutSuspense = async ({ children }: { children: ReactNode }) => {
       <Navbar />
       <div className="flex flex-1 h-full overflow-hidden">
         <LeftSidebar />
-        <div className="flex-1 overflow-y-auto p-5">{children}</div>
+        <div className="flex-1 overflow-y-auto p-8">{children}</div>
         <RightSidebar />
       </div>
     </div>
