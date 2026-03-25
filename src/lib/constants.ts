@@ -26,4 +26,5 @@ export const QUESTIONS_FILTERS = [
   "most-voted",
   "most-answered",
 ] as const;
+export const TAGS_FILTERS = ["recent", "oldest", "popular"] as const;
 export const UNAUTHED_MESSAGE = "Please sign in to access this feature.";
