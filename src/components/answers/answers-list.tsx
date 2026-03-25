@@ -4,13 +4,17 @@ import { EmptyState } from "../empty-state";
 
 export const AnswersList = ({
   answers,
+  showControls = false,
 }: {
   answers: GetUserProfileOutputType["topAnswers"];
+  showControls?: boolean;
 }) => {
   return (
     <div className="w-full space-y-4">
       {answers.length ? (
-        answers.map((a) => <AnswerCard key={a.id} answer={a} />)
+        answers.map((a) => (
+          <AnswerCard key={a.id} showControls={showControls} answer={a} />
+        ))
       ) : (
         <EmptyState
           title="No answers found"

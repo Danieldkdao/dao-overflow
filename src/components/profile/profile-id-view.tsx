@@ -212,7 +212,10 @@ const ProfileIdSuspense = async ({ params }: ProfileIdViewProps) => {
               />
             </TabsContent>
             <TabsContent value="answers">
-              <AnswersList answers={profileData.topAnswers} />
+              <AnswersList
+                answers={profileData.topAnswers}
+                showControls={profileData.isCurrentUser}
+              />
             </TabsContent>
           </Tabs>
         </div>
