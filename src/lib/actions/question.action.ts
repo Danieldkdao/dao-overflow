@@ -17,10 +17,13 @@ import {
   HOME_FILTERS,
   PAGE_SIZE,
   QUESTION_ANSWERS_FILTERS,
+  UNAUTHED_MESSAGE,
 } from "../constants";
 import { and, asc, count, desc, eq, ilike, inArray, sql } from "drizzle-orm";
 import { getTableColumns } from "drizzle-orm";
 import { GetActionOutput } from "../types";
+import { isEqual } from "lodash";
+import { redirect } from "next/navigation";
 
 type PostQuestionProps = {
   title: string;
@@ -77,6 +80,138 @@ export const postQuestion = async ({
     console.error(error);
     return { error: true, message: "Something went wrong" };
   }
+};
+
+export const editQuestion = async (
+  props: PostQuestionProps & { questionId: string },
+) => {
+  const { questionId, question, title, tags } = props;
+  const session = await checkUserAuthed();
+  if (!session) return { error: true, message: UNAUTHED_MESSAGE };
+  const normalizedTags = [...new Set(tags.map((tag) => tag.trim()))];
+
+  const [existingQuestion] = await db
+    .select({
+      ...getTableColumns(QuestionTable),
+      tags: sql<{ name: string }[]>`(
+        SELECT COALESCE(
+          jsonb_agg(
+            jsonb_build_object(
+              'name', tags.tag_name
+            )
+          ),
+          '[]'::jsonb
+        )
+        FROM (
+          SELECT tt.name AS tag_name
+          FROM ${TagTable} tt
+          INNER JOIN ${QuestionTagTable} qtt ON qtt.tag_id = tt.id
+          WHERE qtt.question_id = ${questionId}
+        ) AS tags
+      )`,
+    })
+    .from(QuestionTable)
+    .where(
+      and(
+        eq(QuestionTable.id, questionId),
+        eq(QuestionTable.userId, session.user.id),
+      ),
+    );
+
+  if (!existingQuestion) {
+    return { error: true, message: "Question not found." };
+  }
+
+  if (
+    isEqual(
+      { question: question.trim(), title: title.trim(), tags: normalizedTags },
+      {
+        question: existingQuestion.question.trim(),
+        title: existingQuestion.title.trim(),
+        tags: existingQuestion.tags.map((tag) => tag.name).sort(),
+      },
+    )
+  ) {
+    return { error: true, message: "Question is unchanged." };
+  }
+  await db
+    .update(QuestionTable)
+    .set({
+      question,
+      title,
+    })
+    .where(
+      and(
+        eq(QuestionTable.id, questionId),
+        eq(QuestionTable.userId, session.user.id),
+      ),
+    );
+
+  const existingTagNames = existingQuestion.tags.map((tag) => tag.name).sort();
+  if (!isEqual(existingTagNames, [...normalizedTags].sort())) {
+    await db
+      .insert(TagTable)
+      .values(normalizedTags.map((tag) => ({ name: tag })))
+      .onConflictDoNothing()
+      .returning();
+
+    const tagIds = await db
+      .select({
+        id: TagTable.id,
+      })
+      .from(TagTable)
+      .where(inArray(TagTable.name, normalizedTags));
+
+    await db
+      .delete(QuestionTagTable)
+      .where(eq(QuestionTagTable.questionId, questionId));
+
+    if (tagIds.length > 0) {
+      await db
+        .insert(QuestionTagTable)
+        .values(tagIds.map((tag) => ({ questionId, tagId: tag.id })))
+        .onConflictDoNothing();
+    }
+  }
+
+  return { error: false, message: "Question updated successfully!" };
+};
+
+export const getEditQuestion = async (questionId: string) => {
+  const session = await checkUserAuthed();
+  if (!session) return redirect("/sign-in");
+
+  const [existingQuestion] = await db
+    .select({
+      id: QuestionTable.id,
+      question: QuestionTable.question,
+      title: QuestionTable.title,
+      tags: sql<{ name: string }[]>`(
+        SELECT COALESCE(
+          jsonb_agg(
+            jsonb_build_object(
+              'name', tags.tag_name
+            )
+          ),
+          '[]'::jsonb
+        )
+        FROM (
+          SELECT tt.name AS tag_name
+          FROM ${TagTable} tt
+          INNER JOIN ${QuestionTagTable} qtt ON qtt.tag_id = tt.id
+          WHERE qtt.question_id = ${questionId}
+        ) as tags
+      )`,
+    })
+    .from(QuestionTable)
+    .where(
+      and(
+        eq(QuestionTable.id, questionId),
+        eq(QuestionTable.userId, session.user.id),
+      ),
+    );
+
+  return existingQuestion;
 };
 
 type GetQuestionsProps = {
@@ -233,7 +368,7 @@ export const getQuestion = async (questionId: string) => {
         SELECT qvt.type
         FROM ${QuestionVoteTable} qvt
         WHERE qvt.question_id = ${QuestionTable.id}
-          AND qvt.user_id = ${user.id}
+          AND qvt.user_id = ${session?.user.id}
         LIMIT 1
       )`.as("viewerVote"),
       viewerCollection: sql<string | null>`(
@@ -270,6 +405,8 @@ export const getQuestionAnswers = async ({
   page,
   filter,
 }: GetQuestionsAnswersProps) => {
+  const session = await checkUserAuthed();
+  if (!session) return null;
   const [existingQuestion] = await db
     .select()
     .from(QuestionTable)
@@ -313,7 +450,7 @@ export const getQuestionAnswers = async ({
         SELECT avt.type
         FROM ${AnswerVoteTable} avt
         WHERE avt.answer_id = ${AnswerTable.id}
-          AND avt.user_id = ${user.id}
+          AND avt.user_id = ${session.user.id}
         LIMIT 1
       )`.as("viewerVote"),
     })

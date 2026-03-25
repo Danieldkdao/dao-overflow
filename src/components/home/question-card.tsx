@@ -53,9 +53,11 @@ export const QuestionCard = ({
             <div className="flex items-center gap-2">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <EditIcon className="text-blue-500 dark:text-blue-300" />
-                  </Button>
+                  <Link href={`/edit/${question.id}`}>
+                    <Button variant="ghost" size="icon">
+                      <EditIcon className="text-blue-500 dark:text-blue-300" />
+                    </Button>
+                  </Link>
                 </TooltipTrigger>
                 <TooltipContent>Edit question</TooltipContent>
               </Tooltip>

@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, primaryKey, uuid, varchar } from "drizzle-orm/pg-core";
+import { pgTable, primaryKey, uuid } from "drizzle-orm/pg-core";
 import { QuestionTable } from "./question";
 import { TagTable } from "./tag";
 

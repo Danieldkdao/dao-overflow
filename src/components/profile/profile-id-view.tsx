@@ -120,7 +120,10 @@ const ProfileIdSuspense = async ({ params }: ProfileIdViewProps) => {
           </div>
         </div>
         {badgeMap.map((b) => (
-          <div className="rounded-md border border-border bg-card p-8 flex items-center flex-wrap gap-2">
+          <div
+            key={b.label}
+            className="rounded-md border border-border bg-card p-8 flex items-center flex-wrap gap-2"
+          >
             <div className="relative w-12 h-14 shrink-0">
               <Image
                 src={b.image}
