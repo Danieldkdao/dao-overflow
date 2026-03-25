@@ -2,16 +2,29 @@ import { GetQuestionsOutputType } from "@/lib/actions/question.action";
 import Link from "next/link";
 import { UserAvatar } from "../user-avatar";
 import { formatDistanceToNow } from "date-fns";
-import { MessageCircleIcon, ThumbsUpIcon } from "lucide-react";
+import {
+  EditIcon,
+  EyeIcon,
+  MessageCircleIcon,
+  ThumbsUpIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { useMemo } from "react";
-import { returnNumberAbbr } from "@/lib/utils";
+import { cn, returnNumberAbbr } from "@/lib/utils";
+import { Tag } from "../tag";
+import { Button } from "../ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export const QuestionCard = ({
   question,
+  truncateTitle = false,
+  showControls = false,
 }: {
   question: NonNullable<
     NonNullable<GetQuestionsOutputType>["questions"][number]
   >;
+  truncateTitle?: boolean;
+  showControls?: boolean;
 }) => {
   const formattedVoteCount = useMemo(() => {
     return returnNumberAbbr(question.voteCount);
@@ -26,23 +39,56 @@ export const QuestionCard = ({
   return (
     <div className="bg-card rounded-lg p-6 border space-y-4">
       <div className="flex flex-col gap-2">
-        <Link href={`/question/${question.id}`} className="text-2xl font-bold">
-          {question.title}
-        </Link>
+        <div className="flex-1 flex items-center gap-2">
+          <Link
+            href={`/question/${question.id}`}
+            className={cn(
+              "text-2xl font-bold",
+              truncateTitle && "line-clamp-1",
+            )}
+          >
+            {question.title}
+          </Link>
+          {showControls && (
+            <div className="flex items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <EditIcon className="text-blue-500 dark:text-blue-300" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Edit question</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Trash2Icon className="text-red-500 dark:text-red-400" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Delete question</TooltipContent>
+              </Tooltip>
+            </div>
+          )}
+        </div>
+
         <div className="flex items-center gap-2 flex-wrap">
           {question.tags.map((t) => (
-            <div
+            <Tag
               key={t.id}
-              className="bg-sidebar rounded-md p-2 text-xs text-muted-foreground"
-            >
-              {t.name}
-            </div>
+              id={t.id}
+              name={t.name}
+              variant="default"
+              size="sm"
+            />
           ))}
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Link href={`/profile/${question.user.id}`}>
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <Link
+          href={`/profile/${question.user.id}`}
+          className="flex items-center gap-2"
+        >
           <div className="flex items-center flex-wrap gap-1">
             <UserAvatar
               name={question.user.name}
@@ -67,7 +113,7 @@ export const QuestionCard = ({
             <span className="text-sm">{formattedAnswerCount} answers</span>
           </div>
           <div className="flex items-center gap-1">
-            <ThumbsUpIcon className="size-4" />
+            <EyeIcon className="size-4" />
             <span className="text-sm">{formattedViewCount} views</span>
           </div>
         </div>

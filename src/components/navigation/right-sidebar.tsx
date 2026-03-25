@@ -2,63 +2,9 @@ import { getTopQuestions } from "@/lib/actions/question.action";
 import { getPopularTags } from "@/lib/actions/tags.action";
 import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
+import { Tag } from "@/components/tag";
 
-const forumData = {
-  topQuestions: [
-    {
-      label: "How to use the `useContext` hook in React for global state?",
-      href: "/questions/use-context-hook-react",
-    },
-    {
-      label: "Best practices for securing a Node.js REST API with JWT",
-      href: "/questions/node-rest-api-security",
-    },
-    {
-      label: "Why is my CSS Grid layout breaking on mobile screens?",
-      href: "/questions/css-grid-mobile-fix",
-    },
-    {
-      label: "Understanding the difference between Map and WeakMap in JS",
-      href: "/questions/js-map-vs-weakmap",
-    },
-    {
-      label: "How to optimize PostgreSQL queries for large datasets",
-      href: "/questions/postgres-query-optimization",
-    },
-  ],
-  popularTags: [
-    {
-      label: "javascript",
-      href: "/tags/javascript",
-      number: 1240,
-    },
-    {
-      label: "react",
-      href: "/tags/react",
-      number: 856,
-    },
-    {
-      label: "css",
-      href: "/tags/css",
-      number: 642,
-    },
-    {
-      label: "nodejs",
-      href: "/tags/nodejs",
-      number: 521,
-    },
-    {
-      label: "python",
-      href: "/tags/python",
-      number: 489,
-    },
-    {
-      label: "typescript",
-      href: "/tags/typescript",
-      number: 312,
-    },
-  ],
-};
+
 
 export const RightSidebar = async () => {
   const topQuestions = await getTopQuestions();
@@ -82,14 +28,16 @@ export const RightSidebar = async () => {
       <div className="flex flex-col gap-4 ">
         <h1 className="text-xl font-bold">Popular Tags</h1>
         {popularTags.map((tag) => (
-          <Link key={tag.id} href={`/tags/${tag.id}`}>
-            <div className="flex items-center justify-between">
-              <span className="text-sm bg-card line-clamp-2 p-2 rounded-md">
-                {tag.name.toUpperCase()}
-              </span>
-              <span className="text-sm text-medium">{tag.questionCount}</span>
-            </div>
-          </Link>
+          <div key={tag.id} className="flex items-center justify-between group">
+            <Tag
+              id={tag.id}
+              name={tag.name.toUpperCase()}
+              variant="card"
+              className="line-clamp-2 uppercase p-2 border-none h-auto w-auto shrink bg-card text-foreground! hover:bg-card/80"
+              size="sm"
+            />
+            <span className="text-sm font-medium">{tag.questionCount}</span>
+          </div>
         ))}
       </div>
     </div>

@@ -24,6 +24,7 @@ import { handleQuestionVoteAction } from "@/lib/actions/votes.action";
 import type { VoteType } from "@/db/schema";
 import { toast } from "sonner";
 import { updateCollectionAction } from "@/lib/actions/collections.action";
+import { Tag } from "@/components/tag";
 
 export const QuestionDetails = ({
   question,
@@ -145,9 +146,7 @@ export const QuestionDetails = ({
       </div>
       <div className="flex items-center gap-2">
         {question.tags.map((tag) => (
-          <div key={tag.id} className="p-2 rounded-md bg-accent">
-            {tag.name}
-          </div>
+          <Tag key={tag.id} id={tag.id} name={tag.name} variant="accent" />
         ))}
       </div>
       <div>

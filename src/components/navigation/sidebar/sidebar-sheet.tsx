@@ -10,8 +10,10 @@ import {
 import Image from "next/image";
 import { Navlinks } from "../navbar/nav-links";
 import Link from "next/link";
+import { authClient } from "@/lib/auth/auth-client";
 
 export const SidebarSheet = () => {
+  const { data: session } = authClient.useSession();
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -31,16 +33,18 @@ export const SidebarSheet = () => {
         </SheetHeader>
         <div className="px-4">
           <Navlinks />
-          <div className="flex flex-col gap-2">
-            <Link href="/sign-in">
-              <Button className="w-full">Sign in</Button>
-            </Link>
-            <Link href="/sign-up">
-              <Button variant="outline" className="w-full">
-                Sign up
-              </Button>
-            </Link>
-          </div>
+          {!session && (
+            <div className="flex flex-col gap-2">
+              <Link href="/sign-in">
+                <Button className="w-full">Sign in</Button>
+              </Link>
+              <Link href="/sign-up">
+                <Button variant="outline" className="w-full">
+                  Sign up
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
       </SheetContent>
     </Sheet>

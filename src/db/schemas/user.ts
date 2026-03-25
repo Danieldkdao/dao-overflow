@@ -18,6 +18,9 @@ export const user = pgTable("user", {
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
   username: text("username").unique(),
+  portfolioLink: text("portfolio_link"),
+  location: text("location"),
+  bio: text("bio"),
 });
 
 export const session = pgTable(

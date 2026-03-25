@@ -3,14 +3,28 @@ import { QuestionCard } from "../home/question-card";
 import { EmptyState } from "../empty-state";
 
 export const QuestionsListClient = ({
-  data,
+  questions,
+  truncateTitles = false,
+  showControls = false,
 }: {
-  data: GetQuestionsOutputType;
+  questions:
+    | NonNullable<GetQuestionsOutputType>["questions"]
+    | null
+    | undefined;
+  truncateTitles?: boolean;
+  showControls?: boolean;
 }) => {
   return (
     <div className="grid grid-cols-1 gap-4">
-      {data?.questions.length ? (
-        data.questions.map((q) => <QuestionCard key={q.id} question={q} />)
+      {questions?.length ? (
+        questions.map((q) => (
+          <QuestionCard
+            key={q.id}
+            showControls={showControls}
+            truncateTitle={truncateTitles}
+            question={q}
+          />
+        ))
       ) : (
         <EmptyState
           title="No questions found"

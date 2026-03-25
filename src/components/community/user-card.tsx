@@ -1,6 +1,7 @@
 import { GetUsersOutput } from "@/lib/actions/user.action";
 import { UserAvatar } from "../user-avatar";
 import Link from "next/link";
+import { Tag } from "../tag";
 
 export const UserCard = ({
   user,
@@ -25,12 +26,12 @@ export const UserCard = ({
         <div className="w-full flex items-center gap-2 justify-center">
           {user.topTags.length ? (
             user.topTags.map((t) => (
-              <div
+              <Tag
                 key={t.id}
-                className="bg-sidebar max-w-1/3 truncate w-full rounded-md p-2 text-xs text-muted-foreground"
-              >
-                {t.name}
-              </div>
+                id={t.id}
+                name={t.name}
+                className="bg-sidebar max-w-1/3 truncate w-full rounded-md p-2 text-xs text-muted-foreground block text-left"
+              />
             ))
           ) : (
             <div className="bg-sidebar truncate w-fit rounded-md p-2 text-xs text-muted-foreground">

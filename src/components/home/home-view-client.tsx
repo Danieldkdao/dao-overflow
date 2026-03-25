@@ -19,7 +19,7 @@ export const HomeViewClient = ({ data }: { data: GetQuestionsOutputType }) => {
 
   return (
     <div className="w-full space-y-4">
-      <QuestionsListClient data={data} />
+      <QuestionsListClient questions={data?.questions} />
       {data && data.metadata.totalPages !== 0 && (
         <Pagination
           currentPage={filters.page}
