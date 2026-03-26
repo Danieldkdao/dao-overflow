@@ -8,7 +8,7 @@ export const JobFilters = ({ countries }: { countries: string[] }) => {
   const [filters, setFilters] = useJobFilters();
 
   return (
-    <div className="flex gap-4 mb-8">
+    <div className="flex flex-col sm:flex-row items-center gap-4 mb-8">
       <SearchInput
         placeholder="Job title, company, or keywords"
         value={filters.query}

@@ -42,7 +42,7 @@ export const AnswerCard = ({
     <>
       <ConfirmationDialog />
       <div className="bg-card rounded-lg p-6 border space-y-4">
-        <div className="flex items-center gap-2 justify-between">
+        <div className="flex flex-col items-start sm:flex-row sm:items-center gap-2 sm:justify-between">
           <Link
             href={`/question/${answer.questionId}`}
             className="text-2xl font-bold line-clamp-1"

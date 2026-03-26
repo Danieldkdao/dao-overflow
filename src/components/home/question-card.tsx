@@ -67,7 +67,7 @@ export const QuestionCard = ({
       <ConfirmationDialog />
       <div className="bg-card rounded-lg p-6 border space-y-4">
         <div className="flex flex-col gap-2">
-          <div className="flex-1 flex items-center gap-2">
+          <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-2">
             <Link
               href={`/question/${question.id}`}
               className={cn(

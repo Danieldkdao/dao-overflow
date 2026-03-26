@@ -274,6 +274,7 @@ export const getUserProfile = async (userId: string) => {
             portfolioLink: string | null;
             location: string | null;
             bio: string | null;
+            reputation: number;
           };
           voteCount: number;
           answerCount: number;
@@ -309,7 +310,8 @@ export const getUserProfile = async (userId: string) => {
                 'username', top_posts.user_username,
                 'portfolioLink', top_posts.user_portfolio_link,
                 'location', top_posts.user_location,
-                'bio', top_posts.user_bio
+                'bio', top_posts.user_bio,
+                'reputation', top_posts.user_reputation
               )
             )
           ),
@@ -333,6 +335,7 @@ export const getUserProfile = async (userId: string) => {
             ut.portfolio_link AS user_portfolio_link,
             ut.location AS user_location,
             ut.bio AS user_bio,
+            ut.reputation AS user_reputation,
             (
               SELECT COUNT(*)
               FROM ${QuestionVoteTable} qvt

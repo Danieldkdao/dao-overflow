@@ -20,7 +20,7 @@ export const CountrySelect = ({
 }) => {
   return (
     <Select defaultValue={value} onValueChange={(e) => onChange(e)}>
-      <SelectTrigger className="flex items-center gap-2">
+      <SelectTrigger className="flex items-center gap-2 w-full">
         <MapPinIcon />
         <SelectValue placeholder="Select location"></SelectValue>
       </SelectTrigger>

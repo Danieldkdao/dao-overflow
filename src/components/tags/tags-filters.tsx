@@ -15,7 +15,7 @@ export const TagsFilters = () => {
   const [filters, setFilters] = useTagFilters();
 
   return (
-    <div className="flex items-center gap-4 mb-8">
+    <div className="flex flex-col sm:flex-row items-center gap-4 mb-8">
       <SearchInput
         placeholder="Search tags..."
         value={filters.query}
@@ -37,7 +37,7 @@ export const TagsFilters = () => {
           })
         }
       >
-        <SelectTrigger className="capitalize">
+        <SelectTrigger className="capitalize w-full">
           <SelectValue placeholder="Select a filter" />
         </SelectTrigger>
         <SelectContent>

@@ -31,7 +31,7 @@ export const CommunityFilters = () => {
   const [filters, setFilters] = useCommunityFilters();
 
   return (
-    <div className="flex items-center gap-4 mb-8">
+    <div className="flex flex-col sm:flex-row items-center gap-4 mb-8">
       <SearchInput
         placeholder="Search amazing minds here..."
         value={filters.query}
@@ -53,7 +53,7 @@ export const CommunityFilters = () => {
           })
         }
       >
-        <SelectTrigger>
+        <SelectTrigger className="w-full">
           <SelectValue placeholder="Select a filter" />
         </SelectTrigger>
         <SelectContent>

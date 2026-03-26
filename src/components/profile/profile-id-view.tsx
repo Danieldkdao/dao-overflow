@@ -105,7 +105,7 @@ const ProfileIdSuspense = async ({ params }: ProfileIdViewProps) => {
   return (
     <div className="space-y-8">
       <div className="flex gap-4 justify-between items-start flex-wrap">
-        <div className="flex gap-4 items-start">
+        <div className="flex flex-col sm:flex gap-4 items-start">
           <UserAvatar
             name={profileData.name}
             image={profileData.image}
@@ -114,7 +114,9 @@ const ProfileIdSuspense = async ({ params }: ProfileIdViewProps) => {
           />
           <div className="space-y-4">
             <div>
-              <h1 className="text-3xl font-bold">{profileData.name}</h1>
+              <h1 className="text-3xl font-bold truncate w-full min-w-0">
+                {profileData.name}
+              </h1>
               <span className="text-xl">@{profileData.username}</span>
             </div>
             <div className="flex items-center gap-4 flex-wrap">
@@ -152,7 +154,7 @@ const ProfileIdSuspense = async ({ params }: ProfileIdViewProps) => {
           </div>
         </div>
         {profileData.isCurrentUser && (
-          <Link href="/profile/edit">
+          <Link href="/profile/edit" className="w-full md:w-auto">
             <Button variant="outline" size="lg" className="w-full md:w-auto">
               Edit Profile
             </Button>

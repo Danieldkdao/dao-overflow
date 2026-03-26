@@ -40,7 +40,7 @@ export const CollectionsFilters = () => {
   const [filters, setFilters] = useQuestionFilters();
 
   return (
-    <div className="flex items-center gap-4 mb-8">
+    <div className="flex flex-col sm:flex-row items-center gap-4 mb-8">
       <SearchInput
         placeholder="Search saved questions..."
         value={filters.query}
@@ -62,7 +62,7 @@ export const CollectionsFilters = () => {
           })
         }
       >
-        <SelectTrigger>
+        <SelectTrigger className="w-full">
           <SelectValue placeholder="Select a filter" />
         </SelectTrigger>
         <SelectContent>
