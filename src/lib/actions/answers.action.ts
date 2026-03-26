@@ -19,6 +19,7 @@ import {
 } from "../prompts";
 import { checkUserAuthed, updateUserReputation } from "./user.action";
 import { createInteraction } from "./interactions.action";
+import { envServer } from "@/data/env/server";
 
 type PostAnswerProps = {
   questionId: string;
@@ -112,6 +113,13 @@ export const generateAIAnswer = async (questionId: string) => {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) return { error: true, message: UNAUTHED_MESSAGE };
+
+    if (
+      process.env.NODE_ENV === "production" &&
+      session.user.id !== envServer.ALLOWED_USER
+    ) {
+      return { error: true, message: "You are not allowed to do this." };
+    }
 
     const [existingQuestion] = await db
       .select()

@@ -4,6 +4,7 @@ import { SearchParams } from "nuqs";
 import { Suspense } from "react";
 import { loadSearchParams } from "../../lib/params/community-params";
 import { CommunityViewClient } from "./community-view-client";
+import { SuspenseErrorBoundary } from "../suspense-error-boundary";
 
 export const CommunityView = ({
   searchParams,
@@ -11,9 +12,14 @@ export const CommunityView = ({
   searchParams: Promise<SearchParams>;
 }) => {
   return (
-    <Suspense fallback={<CommunityViewSkeleton />}>
-      <CommunityViewSuspense searchParams={searchParams} />
-    </Suspense>
+    <SuspenseErrorBoundary
+      title="We couldn't load the community"
+      description="The member search or community filters failed to load. The users query may have timed out or returned an unexpected result."
+    >
+      <Suspense fallback={<CommunityViewSkeleton />}>
+        <CommunityViewSuspense searchParams={searchParams} />
+      </Suspense>
+    </SuspenseErrorBoundary>
   );
 };
 

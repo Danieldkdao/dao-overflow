@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircleIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { SuspenseErrorBoundary } from "@/components/suspense-error-boundary";
 
 type QuestionIdViewProps = {
   params: Promise<{ questionId: string }>;
@@ -16,9 +17,14 @@ type QuestionIdViewProps = {
 
 export const QuestionIdView = (params: QuestionIdViewProps) => {
   return (
-    <Suspense fallback={<QuestionIdLoading />}>
-      <QuestionIdSuspense {...params} />
-    </Suspense>
+    <SuspenseErrorBoundary
+      title="We couldn't load this question"
+      description="The question details or answers failed to load. The post may have been removed, or one of the related requests did not complete successfully."
+    >
+      <Suspense fallback={<QuestionIdLoading />}>
+        <QuestionIdSuspense {...params} />
+      </Suspense>
+    </SuspenseErrorBoundary>
   );
 };
 
@@ -111,8 +117,8 @@ const QuestionIdSuspense = async ({
           Question not found
         </h2>
         <p className="text-muted-foreground max-w-md">
-          The question you're looking for doesn't exist, has been removed, or
-          you don't have permission to view it.
+          The question you&apos;re looking for doesn&apos;t exist, has been
+          removed, or you don&apos;t have permission to view it.
         </p>
         <Button asChild className="mt-4">
           <Link href="/">Return Home</Link>

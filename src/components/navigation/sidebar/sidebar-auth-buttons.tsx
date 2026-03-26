@@ -4,12 +4,19 @@ import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { Suspense } from "react";
+import { SuspenseErrorBoundary } from "@/components/suspense-error-boundary";
 
 export const SidebarAuthButtons = () => {
   return (
-    <Suspense fallback={<SidebarAuthButtonsLoading />}>
-      <SidebarAuthButtonsSuspense />
-    </Suspense>
+    <SuspenseErrorBoundary
+      title="We couldn't load auth actions"
+      description="The sidebar could not verify your sign-in state, so it could not decide whether to show sign-in or sign-up actions."
+      className="px-0 py-0"
+    >
+      <Suspense fallback={<SidebarAuthButtonsLoading />}>
+        <SidebarAuthButtonsSuspense />
+      </Suspense>
+    </SuspenseErrorBoundary>
   );
 };
 

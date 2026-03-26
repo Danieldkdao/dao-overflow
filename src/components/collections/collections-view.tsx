@@ -4,6 +4,7 @@ import { SearchParams } from "nuqs";
 import { Suspense } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { CollectionsViewClient } from "./collections-view-client";
+import { SuspenseErrorBoundary } from "../suspense-error-boundary";
 
 type CollectionsViewProps = {
   searchParams: Promise<SearchParams>;
@@ -11,9 +12,14 @@ type CollectionsViewProps = {
 
 export const CollectionsView = (props: CollectionsViewProps) => {
   return (
-    <Suspense fallback={<CollectionsLoading />}>
-      <CollectionsSuspense {...props} />
-    </Suspense>
+    <SuspenseErrorBoundary
+      title="We couldn't load saved questions"
+      description="Your collections depend on your saved-question query and the active filters. That request did not complete successfully."
+    >
+      <Suspense fallback={<CollectionsLoading />}>
+        <CollectionsSuspense {...props} />
+      </Suspense>
+    </SuspenseErrorBoundary>
   );
 };
 

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/empty-state";
+import { SuspenseErrorBoundary } from "@/components/suspense-error-boundary";
 
 type EditQuestionProps = {
   params: Promise<{ questionId: string }>;
@@ -15,9 +16,14 @@ const EditQuestionPage = (props: EditQuestionProps) => {
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-bold">Edit question</h1>
-      <Suspense fallback={<EditQuestionLoading />}>
-        <EditQuestionSuspense {...props} />
-      </Suspense>
+      <SuspenseErrorBoundary
+        title="We couldn't load this question for editing"
+        description="Fetching the question or verifying edit access failed. The post may no longer exist, or you may not be allowed to edit it."
+      >
+        <Suspense fallback={<EditQuestionLoading />}>
+          <EditQuestionSuspense {...props} />
+        </Suspense>
+      </SuspenseErrorBoundary>
     </div>
   );
 };

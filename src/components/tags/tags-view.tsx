@@ -4,6 +4,7 @@ import { SearchParams } from "nuqs";
 import { Suspense } from "react";
 import { TagsViewClient } from "./tags-view-client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SuspenseErrorBoundary } from "@/components/suspense-error-boundary";
 
 type TagsViewProps = {
   searchParams: Promise<SearchParams>;
@@ -11,9 +12,14 @@ type TagsViewProps = {
 
 export const TagsView = (props: TagsViewProps) => {
   return (
-    <Suspense fallback={<TagsLoading />}>
-      <TagsSuspense {...props} />
-    </Suspense>
+    <SuspenseErrorBoundary
+      title="We couldn't load tags"
+      description="The tag directory failed to load. Filtering or the tags query did not complete successfully."
+    >
+      <Suspense fallback={<TagsLoading />}>
+        <TagsSuspense {...props} />
+      </Suspense>
+    </SuspenseErrorBoundary>
   );
 };
 

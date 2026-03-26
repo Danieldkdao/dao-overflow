@@ -53,7 +53,7 @@ export const CommunityFilters = () => {
           })
         }
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full sm:w-auto">
           <SelectValue placeholder="Select a filter" />
         </SelectTrigger>
         <SelectContent>

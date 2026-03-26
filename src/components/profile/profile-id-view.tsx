@@ -11,6 +11,8 @@ import { Tag } from "../tags/tag";
 import { Button } from "../ui/button";
 
 import { Skeleton } from "../ui/skeleton";
+import { SuspenseErrorBoundary } from "../suspense-error-boundary";
+import { ErrorState } from "../error-state";
 
 type ProfileIdViewProps = {
   params: Promise<{ profileId: string }>;
@@ -18,9 +20,14 @@ type ProfileIdViewProps = {
 
 export const ProfileIdView = (props: ProfileIdViewProps) => {
   return (
-    <Suspense fallback={<ProfileIdLoading />}>
-      <ProfileIdSuspense {...props} />
-    </Suspense>
+    <SuspenseErrorBoundary
+      title="We couldn't load this profile"
+      description="The user profile, badge totals, or top posts failed to load. The account may no longer exist, or one of the profile queries did not complete."
+    >
+      <Suspense fallback={<ProfileIdLoading />}>
+        <ProfileIdSuspense {...props} />
+      </Suspense>
+    </SuspenseErrorBoundary>
   );
 };
 
@@ -84,6 +91,14 @@ const ProfileIdSuspense = async ({ params }: ProfileIdViewProps) => {
   const { profileId } = await params;
   const profileData = await getUserProfile(profileId);
 
+  if (!profileData)
+    return (
+      <ErrorState
+        title="We couldn't load this profile"
+        description="The user profile, badge totals, or top posts failed to load. The account may no longer exist, or one of the profile queries did not complete."
+      />
+    );
+
   const badgeMap = [
     {
       image: "/gold-medal.svg",
@@ -105,7 +120,7 @@ const ProfileIdSuspense = async ({ params }: ProfileIdViewProps) => {
   return (
     <div className="space-y-8">
       <div className="flex gap-4 justify-between items-start flex-wrap">
-        <div className="flex flex-col sm:flex gap-4 items-start">
+        <div className="flex flex-col sm:flex-row gap-4 items-start">
           <UserAvatar
             name={profileData.name}
             image={profileData.image}

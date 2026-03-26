@@ -48,7 +48,7 @@ const sanitizeSchema = {
       "dataRehypePrettyCodeFigure",
     ],
     a: [
-      ...((defaultSchema.attributes?.a as string[]) ?? []),
+      ...((defaultSchema.attributes?.["a"] as string[]) ?? []),
       "href",
       "name",
       "target",
@@ -57,7 +57,7 @@ const sanitizeSchema = {
       "tabIndex",
     ],
     code: [
-      ...((defaultSchema.attributes?.code as string[]) ?? []),
+      ...((defaultSchema.attributes?.["code"] as string[]) ?? []),
       "className",
       "style",
       "data-theme",
@@ -70,7 +70,7 @@ const sanitizeSchema = {
     div: ["className", "dataTheme", "dataLanguage", "style"],
     input: ["type", "checked", "disabled"],
     pre: [
-      ...((defaultSchema.attributes?.pre as string[]) ?? []),
+      ...((defaultSchema.attributes?.["pre"] as string[]) ?? []),
       "className",
       "style",
       "tabIndex",
@@ -80,7 +80,7 @@ const sanitizeSchema = {
       "dataTheme",
     ],
     span: [
-      ...((defaultSchema.attributes?.span as string[]) ?? []),
+      ...((defaultSchema.attributes?.["span"] as string[]) ?? []),
       "className",
       "style",
       "data-line",

@@ -4,6 +4,7 @@ import { SearchParams } from "nuqs";
 import { Suspense } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { HomeViewClient } from "./home-view-client";
+import { SuspenseErrorBoundary } from "../suspense-error-boundary";
 
 export const HomeView = ({
   searchParams,
@@ -11,9 +12,14 @@ export const HomeView = ({
   searchParams: Promise<SearchParams>;
 }) => {
   return (
-    <Suspense fallback={<HomeViewLoading />}>
-      <HomeViewSuspense searchParams={searchParams} />
-    </Suspense>
+    <SuspenseErrorBoundary
+      title="We couldn't load the home feed"
+      description="Fetching questions or applying the current filters failed. The feed query may have timed out or the search params may be invalid."
+    >
+      <Suspense fallback={<HomeViewLoading />}>
+        <HomeViewSuspense searchParams={searchParams} />
+      </Suspense>
+    </SuspenseErrorBoundary>
   );
 };
 

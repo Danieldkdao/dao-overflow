@@ -4,12 +4,19 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { OnboardingClient } from "./client";
 import { LoadingState } from "@/components/loading-state";
+import { SuspenseErrorBoundary } from "@/components/suspense-error-boundary";
 
 const OnboardingPage = () => {
   return (
-    <Suspense fallback={<OnboardingPageFallback />}>
-      <OnboardingPageSuspense />
-    </Suspense>
+    <SuspenseErrorBoundary
+      title="We couldn't load onboarding"
+      description="This flow depends on your session and username status. That check failed before the onboarding form could render."
+      fullScreen
+    >
+      <Suspense fallback={<OnboardingPageFallback />}>
+        <OnboardingPageSuspense />
+      </Suspense>
+    </SuspenseErrorBoundary>
   );
 };
 

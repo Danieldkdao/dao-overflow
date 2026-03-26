@@ -37,7 +37,7 @@ export const TagsFilters = () => {
           })
         }
       >
-        <SelectTrigger className="capitalize w-full">
+        <SelectTrigger className="capitalize w-full sm:w-auto">
           <SelectValue placeholder="Select a filter" />
         </SelectTrigger>
         <SelectContent>

@@ -7,6 +7,7 @@ import { JobViewClient } from "./job-view-client";
 import { Job } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SearchIcon, MapPinIcon, ChevronDownIcon } from "lucide-react";
+import { SuspenseErrorBoundary } from "@/components/suspense-error-boundary";
 
 export const JobsView = ({
   searchParams,
@@ -14,9 +15,14 @@ export const JobsView = ({
   searchParams: Promise<SearchParams>;
 }) => {
   return (
-    <Suspense fallback={<JobsViewLoading />}>
-      <JobsViewSuspense searchParams={searchParams} />
-    </Suspense>
+    <SuspenseErrorBoundary
+      title="We couldn't load job listings"
+      description="The job search, country list, or location lookup failed. One of the external jobs requests may be unavailable right now."
+    >
+      <Suspense fallback={<JobsViewLoading />}>
+        <JobsViewSuspense searchParams={searchParams} />
+      </Suspense>
+    </SuspenseErrorBoundary>
   );
 };
 

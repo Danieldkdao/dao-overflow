@@ -4,12 +4,18 @@ import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SuspenseErrorBoundary } from "@/components/suspense-error-boundary";
 
 export const ProfileEditView = () => {
   return (
-    <Suspense fallback={<ProfileEditLoading />}>
-      <ProfileEditSuspense />
-    </Suspense>
+    <SuspenseErrorBoundary
+      title="We couldn't load your profile editor"
+      description="Your session may have expired, or your profile details could not be prepared for editing."
+    >
+      <Suspense fallback={<ProfileEditLoading />}>
+        <ProfileEditSuspense />
+      </Suspense>
+    </SuspenseErrorBoundary>
   );
 };
 

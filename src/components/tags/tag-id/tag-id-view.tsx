@@ -6,6 +6,7 @@ import { TagIdViewClient } from "./tag-id-view-client";
 import { TagIdFilters } from "./tag-id-filters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/empty-state";
+import { SuspenseErrorBoundary } from "@/components/suspense-error-boundary";
 
 type TagIdViewProps = {
   params: Promise<{ tagId: string }>;
@@ -14,9 +15,14 @@ type TagIdViewProps = {
 
 export const TagIdView = (props: TagIdViewProps) => {
   return (
-    <Suspense fallback={<TagIdLoading />}>
-      <TagIdSuspense {...props} />
-    </Suspense>
+    <SuspenseErrorBoundary
+      title="We couldn't load this tag page"
+      description="The tag details or tagged questions failed to load. The tag may have been removed, or the filter query did not complete successfully."
+    >
+      <Suspense fallback={<TagIdLoading />}>
+        <TagIdSuspense {...props} />
+      </Suspense>
+    </SuspenseErrorBoundary>
   );
 };
 
