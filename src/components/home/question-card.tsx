@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 import { cn, returnNumberAbbr } from "@/lib/utils";
-import { Tag } from "../tag";
+import { Tag } from "../tags/tag";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { useConfirm } from "@/hooks/use-confirm";

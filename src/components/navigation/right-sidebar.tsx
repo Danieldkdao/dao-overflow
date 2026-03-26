@@ -2,9 +2,7 @@ import { getTopQuestions } from "@/lib/actions/question.action";
 import { getPopularTags } from "@/lib/actions/tags.action";
 import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
-import { Tag } from "@/components/tag";
-
-
+import { Tag } from "@/components/tags/tag";
 
 export const RightSidebar = async () => {
   const topQuestions = await getTopQuestions();

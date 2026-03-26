@@ -11,11 +11,13 @@ import Image from "next/image";
 import { Navlinks } from "../navbar/nav-links";
 import Link from "next/link";
 import { authClient } from "@/lib/auth/auth-client";
+import { useState } from "react";
 
 export const SidebarSheet = () => {
   const { data: session } = authClient.useSession();
+  const [open, setOpen] = useState(false);
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button size="icon" variant="ghost" className="sm:hidden">
           <MenuIcon className="size-8" />
@@ -32,7 +34,7 @@ export const SidebarSheet = () => {
           />
         </SheetHeader>
         <div className="px-4">
-          <Navlinks />
+          <Navlinks setOpen={setOpen} />
           {!session && (
             <div className="flex flex-col gap-2">
               <Link href="/sign-in">

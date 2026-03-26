@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Dispatch, SetStateAction } from "react";
 
 const links = [
   {
@@ -51,7 +52,11 @@ const links = [
   },
 ];
 
-export const Navlinks = () => {
+export const Navlinks = ({
+  setOpen,
+}: {
+  setOpen?: Dispatch<SetStateAction<boolean>>;
+}) => {
   const pathname = usePathname();
 
   return (
@@ -59,7 +64,11 @@ export const Navlinks = () => {
       {links.map((link) => {
         const isActive = link.href === pathname;
         return (
-          <Link key={link.label} href={link.href}>
+          <Link
+            key={link.label}
+            onNavigate={() => setOpen?.(false)}
+            href={link.href}
+          >
             <div
               className={cn(
                 "px-2 py-3 rounded-lg flex items-center gap-3",

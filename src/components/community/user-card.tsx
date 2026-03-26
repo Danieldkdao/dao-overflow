@@ -1,7 +1,7 @@
 import { GetUsersOutput } from "@/lib/actions/user.action";
 import { UserAvatar } from "../user-avatar";
 import Link from "next/link";
-import { Tag } from "../tag";
+import { Tag } from "../tags/tag";
 
 export const UserCard = ({
   user,

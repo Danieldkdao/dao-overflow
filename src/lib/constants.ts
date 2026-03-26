@@ -1,3 +1,11 @@
+import {
+  LucideIcon,
+  MessageCircleQuestionMarkIcon,
+  MessageSquareMoreIcon,
+  TagIcon,
+  UserIcon,
+} from "lucide-react";
+
 export const DEFAULT_PAGE = 1;
 export const PAGE_SIZE = 20;
 
@@ -54,4 +62,26 @@ export const BADGE_CRITERIA = {
     SILVER: 10000,
     GOLD: 100000,
   },
+};
+export const GLOBAL_SEARCH_TYPES = [
+  "question",
+  "answer",
+  "user",
+  "tag",
+] as const;
+
+export const GLOBAL_SEARCH_TYPE_MAP: Record<
+  (typeof GLOBAL_SEARCH_TYPES)[number],
+  { icon: LucideIcon; returnHref: (id: string) => string }
+> = {
+  answer: {
+    icon: MessageSquareMoreIcon,
+    returnHref: (id: string) => `/question/${id}`,
+  },
+  question: {
+    icon: MessageCircleQuestionMarkIcon,
+    returnHref: (id: string) => `/question/${id}`,
+  },
+  tag: { icon: TagIcon, returnHref: (id: string) => `/tags/${id}` },
+  user: { icon: UserIcon, returnHref: (id: string) => `/profile/${id}` },
 };

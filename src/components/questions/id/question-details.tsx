@@ -24,7 +24,7 @@ import { handleQuestionVoteAction } from "@/lib/actions/votes.action";
 import type { VoteType } from "@/db/schema";
 import { toast } from "sonner";
 import { updateCollectionAction } from "@/lib/actions/collections.action";
-import { Tag } from "@/components/tag";
+import { Tag } from "@/components/tags/tag";
 
 export const QuestionDetails = ({
   question,

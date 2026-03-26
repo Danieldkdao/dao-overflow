@@ -1,3 +1,5 @@
+import { GLOBAL_SEARCH_TYPES } from "./constants";
+
 export type GetActionOutput<T extends (...args: any) => any> = Awaited<
   ReturnType<T>
 >;
@@ -47,3 +49,5 @@ export type Job = {
   job_onet_soc: string;
   job_onet_job_zone: string;
 };
+
+export type GlobalSearchType = (typeof GLOBAL_SEARCH_TYPES)[number];

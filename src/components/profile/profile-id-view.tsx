@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { QuestionsListClient } from "../questions/questions-list-client";
 import { AnswersList } from "../answers/answers-list";
-import { Tag } from "../tag";
+import { Tag } from "../tags/tag";
 import { Button } from "../ui/button";
 
 import { Skeleton } from "../ui/skeleton";

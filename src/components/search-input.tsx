@@ -25,7 +25,7 @@ export const SearchInput = ({
   }, [debouncedSearchValue["0"]]);
 
   return (
-    <div className="hidden md:flex px-2 py-1 dark:bg-input/40 border border-border rounded-lg items-center flex-1">
+    <div className="flex px-2 py-1 dark:bg-input/40 border border-border rounded-lg items-center flex-1">
       <SearchIcon />
       <Input
         placeholder={placeholder}
