@@ -36,7 +36,11 @@ export const CommunityFilters = () => {
         placeholder="Search amazing minds here..."
         value={filters.query}
         onSearchAction={(value) =>
-          setFilters({ page: DEFAULT_PAGE, query: value, filter: "new_users" })
+          setFilters({
+            page: DEFAULT_PAGE,
+            query: value,
+            filter: filters.filter,
+          })
         }
       />
       <Select
@@ -44,7 +48,7 @@ export const CommunityFilters = () => {
         onValueChange={(value) =>
           setFilters({
             page: DEFAULT_PAGE,
-            query: "",
+            query: filters.query,
             filter: value as UserFilterType,
           })
         }

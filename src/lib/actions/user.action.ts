@@ -65,6 +65,15 @@ export const onboardUser = async (username: string) => {
   }
 };
 
+export const updateUserReputation = async (amount: number, userId: string) => {
+  await db
+    .update(user)
+    .set({
+      reputation: sql<number>`${user.reputation} + ${amount}`,
+    })
+    .where(eq(user.id, userId));
+};
+
 export type UserFilterType = (typeof COMMUNITY_FILTERS)[number];
 
 export const fetchUsers = async (
@@ -78,8 +87,7 @@ export const fetchUsers = async (
   const filterMap = {
     new_users: [desc(user.createdAt), desc(user.id)],
     old_users: [asc(user.createdAt), asc(user.id)],
-    // todo: add the amount of questions created/answered, tags
-    top_contributors: [],
+    top_contributors: [desc(user.reputation), desc(user.id)],
   };
 
   const filterMapResult = filterMap[filter];

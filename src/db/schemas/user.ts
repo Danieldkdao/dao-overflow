@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  index,
+  integer,
+} from "drizzle-orm/pg-core";
 import { QuestionTable } from "./question";
 import { AnswerTable } from "./answers";
 import { QuestionVoteTable } from "./question-vote";
@@ -21,6 +28,7 @@ export const user = pgTable("user", {
   portfolioLink: text("portfolio_link"),
   location: text("location"),
   bio: text("bio"),
+  reputation: integer("reputation").default(0).notNull(),
 });
 
 export const session = pgTable(

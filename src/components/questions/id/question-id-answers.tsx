@@ -1,13 +1,12 @@
 "use client";
 
-import { GetQuestionAnswersOutputType } from "@/lib/actions/question.action";
-import { QuestionIdAnswersFilters } from "./question-id-answers-filters";
 import { EmptyState } from "@/components/empty-state";
-import { AnswerSubmission } from "./answer-submission";
-import { QuestionAnswer } from "./question-answer";
 import { Pagination } from "@/components/pagination";
 import { useQuestionIdFilters } from "@/hooks/use-question-id-filters";
-import { PAGE_SIZE } from "@/lib/constants";
+import { GetQuestionAnswersOutputType } from "@/lib/actions/question.action";
+import { AnswerSubmission } from "./answer-submission";
+import { QuestionAnswer } from "./question-answer";
+import { QuestionIdAnswersFilters } from "./question-id-answers-filters";
 
 export const QuestionIdAnswers = ({
   questionId,
@@ -46,9 +45,11 @@ export const QuestionIdAnswers = ({
           description="Looks like no one has answered this question yet. Be the first to share your insights!"
         />
       )}
-      {answers.map((a) => (
-        <QuestionAnswer key={a.id} answer={a} />
-      ))}
+      <div className="w-full">
+        {answers.map((a) => (
+          <QuestionAnswer key={a.id} answer={a} />
+        ))}
+      </div>
       {metadata.totalPages !== 0 && (
         <Pagination
           currentPage={filters.page}

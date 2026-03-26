@@ -30,6 +30,12 @@ export const auth = betterAuth({
         required: false,
         input: true,
       },
+      reputation: {
+        type: "number",
+        required: true,
+        defaultValue: 0,
+        input: false,
+      },
     },
   },
   emailAndPassword: {

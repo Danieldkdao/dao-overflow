@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db/db";
-import { checkUserAuthed } from "./user.action";
+import { checkUserAuthed, updateUserReputation } from "./user.action";
 import {
   AnswerTable,
   AnswerVoteTable,
@@ -19,7 +19,17 @@ import {
   QUESTION_ANSWERS_FILTERS,
   UNAUTHED_MESSAGE,
 } from "../constants";
-import { and, asc, count, desc, eq, ilike, inArray, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  notExists,
+  sql,
+} from "drizzle-orm";
 import { getTableColumns } from "drizzle-orm";
 import { GetActionOutput } from "../types";
 import { isEqual } from "lodash";
@@ -74,6 +84,8 @@ export const postQuestion = async ({
         questionId: postedQuestion.id,
       })),
     );
+
+    await updateUserReputation(5, session.user.id);
 
     return { error: false, message: "Question posted successfully!" };
   } catch (error) {
@@ -252,9 +264,8 @@ export const getQuestions = async (filters: GetQuestionsProps) => {
 
   const filterMap: Record<(typeof HOME_FILTERS)[number], any> = {
     newest: [desc(QuestionTable.createdAt), desc(QuestionTable.id)],
-    // todo: add recommended, frequent, unanswered filters
     recommended: undefined,
-    frequent: undefined,
+    frequent: [desc(QuestionTable.views), desc(QuestionTable.id)],
     unanswered: undefined,
     "": undefined,
   };
@@ -297,14 +308,21 @@ export const getQuestions = async (filters: GetQuestionsProps) => {
     .leftJoin(TagTable, eq(TagTable.id, QuestionTagTable.tagId))
     .where(
       and(
-        filter !== "newest" ? filterMap[filter] : undefined,
+        filter === "unanswered"
+          ? notExists(
+              db
+                .select({ id: AnswerTable.id })
+                .from(AnswerTable)
+                .where(eq(AnswerTable.questionId, QuestionTable.id)),
+            )
+          : undefined,
         query.trim() ? ilike(QuestionTable.title, `%${query}%`) : undefined,
       ),
     )
     .groupBy(QuestionTable.id, user.id)
     .offset(offset)
     .orderBy(
-      ...(filter === "newest"
+      ...(filter === "newest" || filter === "frequent"
         ? filterMap[filter]
         : [asc(QuestionTable.createdAt), asc(QuestionTable.id)]),
     )
@@ -317,8 +335,15 @@ export const getQuestions = async (filters: GetQuestionsProps) => {
     .from(QuestionTable)
     .where(
       and(
-        filter !== "newest" ? filterMap[filter] : undefined,
-        query.trim() ? undefined : ilike(QuestionTable.title, `%${query}%`),
+        filter === "unanswered"
+          ? notExists(
+              db
+                .select({ id: AnswerTable.id })
+                .from(AnswerTable)
+                .where(eq(AnswerTable.questionId, QuestionTable.id)),
+            )
+          : undefined,
+        query.trim() ? ilike(QuestionTable.title, `%${query}%`) : undefined,
       ),
     );
 

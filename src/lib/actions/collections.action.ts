@@ -32,6 +32,22 @@ export const updateCollectionAction = async (questionId: string) => {
     const session = await checkUserAuthed();
     if (!session) return { error: true, message: UNAUTHED_MESSAGE };
 
+    const [existingQuestion] = await db
+      .select({ questionId: QuestionTable.id, userId: QuestionTable.userId })
+      .from(QuestionTable)
+      .where(eq(QuestionTable.id, questionId));
+
+    if (!existingQuestion) {
+      return { error: true, message: "Question not found." };
+    }
+
+    if (existingQuestion.userId === session.user.id) {
+      return {
+        error: true,
+        message: "You cannot add your own question to your collection.",
+      };
+    }
+
     const [existingQuestionInCollection] = await db
       .select()
       .from(CollectionTable)

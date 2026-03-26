@@ -12,7 +12,7 @@ import {
   AI_GENERATE_ANSWER_SYSTEM_PROMPT,
   buildGenerateAnswerPrompt,
 } from "../prompts";
-import { checkUserAuthed } from "./user.action";
+import { checkUserAuthed, updateUserReputation } from "./user.action";
 
 type PostAnswerProps = {
   questionId: string;
@@ -32,6 +32,8 @@ export const postAnswer = async ({
       questionId,
       userId: session.user.id,
     });
+
+    await updateUserReputation(10, session.user.id);
 
     return { error: false, message: "Answer posted successfully!" };
   } catch (error) {

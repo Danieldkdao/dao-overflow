@@ -16,9 +16,10 @@ import { Input } from "@/components/ui/input";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { editQuestion, postQuestion } from "@/lib/actions/question.action";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { MDXEditorMethods } from "@mdxeditor/editor";
 import { XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -54,6 +55,7 @@ export const AskEditQuestionForm = ({
   });
   const [tagInputValue, setTagInputValue] = useState("");
   const router = useRouter();
+  const editorRef = useRef<MDXEditorMethods>(null);
 
   const handleAskEditQuestion = async (data: FormType) => {
     const response = await (questionId
@@ -62,6 +64,8 @@ export const AskEditQuestionForm = ({
     if (response.error) {
       toast.error(response.message);
     } else {
+      form.reset();
+      editorRef.current?.setMarkdown("");
       toast.success(response.message);
       router.push("/");
     }
@@ -103,6 +107,7 @@ export const AskEditQuestionForm = ({
               <FormLabel>Detailed explanation of your problem?</FormLabel>
               <FormControl>
                 <ForwardRefEditor
+                  ref={editorRef}
                   markdown={field.value}
                   onChange={(value) => field.onChange(value)}
                   onBlur={field.onBlur}

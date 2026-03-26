@@ -20,7 +20,11 @@ export const TagsFilters = () => {
         placeholder="Search tags..."
         value={filters.query}
         onSearchAction={(value) =>
-          setFilters({ page: DEFAULT_PAGE, query: value, filter: "recent" })
+          setFilters({
+            page: DEFAULT_PAGE,
+            query: value,
+            filter: filters.filter,
+          })
         }
       />
       <Select

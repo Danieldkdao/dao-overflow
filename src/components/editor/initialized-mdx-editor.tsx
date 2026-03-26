@@ -25,6 +25,7 @@ import {
 } from "@mdxeditor/editor";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
 
 export default function InitializedMDXEditor({
   editorRef,
@@ -42,6 +43,7 @@ export default function InitializedMDXEditor({
 
   return (
     <MDXEditor
+      key={resolvedTheme}
       className={cn(markdownClassNames, isDark && "dark-theme", className)}
       suppressHtmlProcessing
       plugins={[
@@ -64,7 +66,15 @@ export default function InitializedMDXEditor({
             md: "Markdown",
             txt: "Text",
             py: "Python",
+            java: "Java",
+            cpp: "C++",
+            cs: "C#",
+            go: "Go",
+            rs: "Rust",
+            swift: "Swift",
+            kt: "Kotlin",
           },
+          codeMirrorExtensions: [isDark ? githubDark : githubLight],
         }),
         markdownShortcutPlugin(),
         toolbarPlugin({

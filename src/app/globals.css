@@ -217,7 +217,16 @@
   }
 
   .mdxeditor-popup-container {
+    position: fixed !important;
+    inset: 0;
+    pointer-events: none;
     @apply z-50!;
+  }
+
+  .mdxeditor-select-content {
+    pointer-events: auto;
+    max-height: min(300px, calc(100dvh - 1rem));
+    overflow-y: auto;
   }
 
   .dark-theme {

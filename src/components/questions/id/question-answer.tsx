@@ -35,7 +35,7 @@ export const QuestionAnswer = ({
   };
 
   return (
-    <div className="p-4 border-y flex flex-col gap-6 w-full">
+    <div className="py-6 border-b border-border flex flex-col gap-6 w-full">
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-1">
           <div className="flex items-center gap-2">

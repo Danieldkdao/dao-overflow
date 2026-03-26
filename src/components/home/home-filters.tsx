@@ -13,7 +13,7 @@ export const HomeFilters = () => {
       <SearchInput
         value={filters.query}
         onSearchAction={(value) =>
-          setFilters({ filter: "", page: 1, query: value })
+          setFilters({ filter: filters.filter, page: 1, query: value })
         }
         placeholder="Search questions..."
       />

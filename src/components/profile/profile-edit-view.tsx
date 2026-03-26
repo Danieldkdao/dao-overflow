@@ -3,6 +3,7 @@ import { ProfileEditForm } from "./profile-edit-form";
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const ProfileEditView = () => {
   return (
@@ -13,7 +14,31 @@ export const ProfileEditView = () => {
 };
 
 const ProfileEditLoading = () => {
-  return <div>Loading...</div>;
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="grid gap-2">
+        <Skeleton className="h-4 w-12" />
+        <Skeleton className="h-9 w-full" />
+      </div>
+      <div className="grid gap-2">
+        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-9 w-full" />
+      </div>
+      <div className="grid gap-2">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-9 w-full" />
+      </div>
+      <div className="grid gap-2">
+        <Skeleton className="h-4 w-16" />
+        <Skeleton className="h-9 w-full" />
+      </div>
+      <div className="grid gap-2">
+        <Skeleton className="h-4 w-8" />
+        <Skeleton className="min-h-16 w-full" />
+      </div>
+      <Skeleton className="h-9 w-32 self-end" />
+    </div>
+  );
 };
 
 const ProfileEditSuspense = async () => {
