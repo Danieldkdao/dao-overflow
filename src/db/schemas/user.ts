@@ -12,6 +12,7 @@ import { AnswerTable } from "./answers";
 import { QuestionVoteTable } from "./question-vote";
 import { AnswerVoteTable } from "./answer-vote";
 import { CollectionTable } from "./collection";
+import { InteractionTable } from "./interaction";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -98,6 +99,7 @@ export const userRelations = relations(user, ({ many }) => ({
   questionVotes: many(QuestionVoteTable),
   answerVotes: many(AnswerVoteTable),
   collection: many(CollectionTable),
+  interactions: many(InteractionTable),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({

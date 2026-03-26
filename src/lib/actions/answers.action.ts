@@ -4,8 +4,13 @@ import { headers } from "next/headers";
 import { auth } from "../auth/auth";
 import { UNAUTHED_MESSAGE } from "../constants";
 import { db } from "@/db/db";
-import { AnswerTable, QuestionTable } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import {
+  AnswerTable,
+  QuestionTable,
+  QuestionTagTable,
+  TagTable,
+} from "@/db/schema";
+import { and, eq, sql } from "drizzle-orm";
 import { generateText } from "ai";
 import { cohere } from "@/services/ai/models";
 import {
@@ -13,6 +18,7 @@ import {
   buildGenerateAnswerPrompt,
 } from "../prompts";
 import { checkUserAuthed, updateUserReputation } from "./user.action";
+import { createInteraction } from "./interactions.action";
 
 type PostAnswerProps = {
   questionId: string;
@@ -27,10 +33,43 @@ export const postAnswer = async ({
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) return { error: true, message: UNAUTHED_MESSAGE };
 
+    const [existingQuestion] = await db
+      .select({
+        id: QuestionTable.id,
+        tags: sql<{ id: string }[]>`(
+        SELECT COALESCE(
+          jsonb_agg(
+            jsonb_build_object(
+              'id', tags.tag_id
+            )
+          ),
+          '[]'::jsonb
+        )
+        FROM (
+          SELECT tt.id AS tag_id
+          FROM ${TagTable} tt
+          INNER JOIN ${QuestionTagTable} qtt ON qtt.tag_id = tt.id
+          WHERE qtt.question_id = ${QuestionTable.id}
+        ) AS tags
+      )`,
+      })
+      .from(QuestionTable)
+      .where(eq(QuestionTable.id, questionId));
+
+    if (!existingQuestion) {
+      return { error: true, message: "Question not found." };
+    }
+
     await db.insert(AnswerTable).values({
       answerText,
-      questionId,
+      questionId: existingQuestion.id,
       userId: session.user.id,
+    });
+
+    await createInteraction({
+      action: "answer",
+      tags: existingQuestion.tags.map((tag) => tag.id),
+      questionId: existingQuestion.id,
     });
 
     await updateUserReputation(10, session.user.id);

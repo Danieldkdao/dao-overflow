@@ -6,6 +6,7 @@ import {
   AnswerTable,
   AnswerVoteTable,
   CollectionTable,
+  InteractionTable,
   QuestionTable,
   QuestionTagTable,
   QuestionVoteTable,
@@ -21,12 +22,14 @@ import {
 } from "../constants";
 import {
   and,
+  arrayOverlaps,
   asc,
   count,
   desc,
   eq,
   ilike,
   inArray,
+  not,
   notExists,
   sql,
 } from "drizzle-orm";
@@ -34,6 +37,7 @@ import { getTableColumns } from "drizzle-orm";
 import { GetActionOutput } from "../types";
 import { isEqual } from "lodash";
 import { redirect } from "next/navigation";
+import { createInteraction } from "./interactions.action";
 
 type PostQuestionProps = {
   title: string;
@@ -84,6 +88,12 @@ export const postQuestion = async ({
         questionId: postedQuestion.id,
       })),
     );
+
+    await createInteraction({
+      action: "ask-question",
+      tags: tagIds.map((tag) => tag.id),
+      questionId: postedQuestion.id,
+    });
 
     await updateUserReputation(5, session.user.id);
 
@@ -258,6 +268,7 @@ type GetQuestionsProps = {
 
 export const getQuestions = async (filters: GetQuestionsProps) => {
   const { query, page, filter } = filters;
+  const session = await checkUserAuthed();
 
   if (page < 1) return null;
   const offset = (page - 1) * PAGE_SIZE;
@@ -269,6 +280,38 @@ export const getQuestions = async (filters: GetQuestionsProps) => {
     unanswered: undefined,
     "": undefined,
   };
+
+  let interactedTags: string[] = [];
+
+  if (filter === "recommended") {
+    const userInteractions = await db
+      .select()
+      .from(InteractionTable)
+      .where(eq(InteractionTable.userId, session?.user.id ?? ""));
+    interactedTags = [...new Set(userInteractions.flatMap((ui) => ui.tags))];
+  }
+
+  const questionTagIds = sql<string[]>`ARRAY(
+    SELECT ${QuestionTagTable.tagId}
+    FROM ${QuestionTagTable}
+    WHERE ${QuestionTagTable.questionId} = ${QuestionTable.id}
+  )`;
+
+  const recommendedCondition =
+    filter === "recommended"
+      ? [
+          not(eq(QuestionTable.userId, session?.user.id ?? "")),
+          interactedTags.length > 0
+            ? arrayOverlaps(
+                questionTagIds,
+                sql`ARRAY[${sql.join(
+                  interactedTags.map((tagId) => sql`${tagId}::uuid`),
+                  sql`, `,
+                )}]::uuid[]`,
+              )
+            : sql`false`,
+        ]
+      : [];
 
   const questions = await db
     .select({
@@ -316,6 +359,7 @@ export const getQuestions = async (filters: GetQuestionsProps) => {
                 .where(eq(AnswerTable.questionId, QuestionTable.id)),
             )
           : undefined,
+        ...recommendedCondition,
         query.trim() ? ilike(QuestionTable.title, `%${query}%`) : undefined,
       ),
     )
@@ -343,6 +387,7 @@ export const getQuestions = async (filters: GetQuestionsProps) => {
                 .where(eq(AnswerTable.questionId, QuestionTable.id)),
             )
           : undefined,
+        ...recommendedCondition,
         query.trim() ? ilike(QuestionTable.title, `%${query}%`) : undefined,
       ),
     );
@@ -536,10 +581,58 @@ export type GetQuestionAnswersOutputType = GetActionOutput<
 >;
 
 export const incrementQuestionViewCount = async (questionId: string) => {
+  const session = await checkUserAuthed();
+
+  const [existingQuestion] = await db
+    .select({
+      id: QuestionTable.id,
+      tags: sql<{ id: string }[]>`(
+        SELECT COALESCE(
+          jsonb_agg(
+            jsonb_build_object(
+              'id', tags.tag_id
+            )
+          ),
+          '[]'::jsonb
+        )
+        FROM (
+          SELECT tt.id AS tag_id
+          FROM ${TagTable} tt
+          INNER JOIN ${QuestionTagTable} qtt ON qtt.tag_id = tt.id
+          WHERE qtt.question_id = ${QuestionTable.id}
+        ) AS tags
+      )`,
+    })
+    .from(QuestionTable)
+    .where(eq(QuestionTable.id, questionId));
+
+  if (!existingQuestion) {
+    return;
+  }
+
   await db
     .update(QuestionTable)
     .set({
       views: sql`${QuestionTable.views} + 1`,
     })
-    .where(eq(QuestionTable.id, questionId));
+    .where(eq(QuestionTable.id, existingQuestion.id));
+
+  const [existingInteraction] = await db
+    .select()
+    .from(InteractionTable)
+    .where(
+      and(
+        eq(InteractionTable.action, "view"),
+        eq(InteractionTable.questionId, existingQuestion.id),
+        eq(InteractionTable.userId, session?.user.id ?? ""),
+      ),
+    );
+
+  if (!existingInteraction) {
+    await createInteraction({
+      action: "view",
+      tags: existingQuestion.tags.map((tag) => tag.id),
+      questionId: existingQuestion.id,
+    });
+  }
 };

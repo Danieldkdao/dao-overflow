@@ -6,3 +6,4 @@ export * from "./schemas/question";
 export * from "./schemas/question-tag";
 export * from "./schemas/question-vote";
 export * from "./schemas/tag";
+export * from "./schemas/interaction";

@@ -10,6 +10,7 @@ import { relations } from "drizzle-orm";
 import { TagTable } from "./tag";
 import { QuestionVoteTable } from "./question-vote";
 import { AnswerTable } from "./answers";
+import { InteractionTable } from "./interaction";
 
 export const QuestionTable = pgTable("questions", {
   id: uuid().primaryKey().defaultRandom(),
@@ -32,4 +33,5 @@ export const questionRelations = relations(QuestionTable, ({ one, many }) => ({
     references: [user.id],
   }),
   answers: many(AnswerTable),
+  interactions: many(InteractionTable),
 }));
