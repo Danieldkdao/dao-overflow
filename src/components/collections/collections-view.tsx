@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { CollectionsViewClient } from "./collections-view-client";
 import { SuspenseErrorBoundary } from "../suspense-error-boundary";
+import { CollectionsFilters } from "./collections-filters";
 
 type CollectionsViewProps = {
   searchParams: Promise<SearchParams>;
@@ -26,6 +27,10 @@ export const CollectionsView = (props: CollectionsViewProps) => {
 const CollectionsLoading = () => {
   return (
     <div className="w-full space-y-4">
+      <div className="flex flex-col sm:flex-row items-center gap-4 mb-8">
+        <Skeleton className="h-10 w-full rounded-md" />
+        <Skeleton className="h-10 w-full sm:w-44 rounded-md" />
+      </div>
       <div className="grid grid-cols-1 gap-4">
         {Array.from({ length: 6 }).map((_, index) => (
           <div
@@ -70,5 +75,10 @@ const CollectionsSuspense = async ({ searchParams }: CollectionsViewProps) => {
   const filters = await loadSearchParams(searchParams);
   const data = await getCollectionAction(filters);
 
-  return <CollectionsViewClient data={data} />;
+  return (
+    <div>
+      <CollectionsFilters />
+      <CollectionsViewClient data={data} />
+    </div>
+  );
 };

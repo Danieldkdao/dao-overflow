@@ -13,7 +13,11 @@ import {
   user,
 } from "@/db/schema";
 import { and, eq, getTableColumns, sql } from "drizzle-orm";
-import { checkUserAuthed } from "./user.action";
+import { checkUserAuthed } from "./auth.action";
+import {
+  revalidateAnswerVoteCache,
+  revalidateQuestionVoteCache,
+} from "../cache";
 
 type VoteProps = {
   id: string;
@@ -121,6 +125,12 @@ export const handleQuestionVoteAction = async ({
       );
     });
 
+    revalidateQuestionVoteCache({
+      questionId,
+      voterId: session.user.id,
+      authorId: existingQuestion.userId,
+    });
+
     return { error: false, message: `Question ${type} voted successfully!` };
   } catch (error) {
     console.error(error);
@@ -140,7 +150,11 @@ export const handleAnswerVoteAction = async ({
     if (!session) return { error: true, message: UNAUTHED_MESSAGE };
 
     const [existingAnswer] = await db
-      .select({ answerId: AnswerTable.id, userId: AnswerTable.userId })
+      .select({
+        answerId: AnswerTable.id,
+        userId: AnswerTable.userId,
+        questionId: AnswerTable.questionId,
+      })
       .from(AnswerTable)
       .where(eq(AnswerTable.id, answerId));
 
@@ -208,6 +222,13 @@ export const handleAnswerVoteAction = async ({
         existingAnswer.userId,
         getAuthorDelta(existingVote.type) * -1 + getAuthorDelta(type),
       );
+    });
+
+    revalidateAnswerVoteCache({
+      answerId,
+      questionId: existingAnswer.questionId,
+      voterId: session.user.id,
+      authorId: existingAnswer.userId,
     });
 
     return { error: false, message: `Answer ${type} voted successfully!` };

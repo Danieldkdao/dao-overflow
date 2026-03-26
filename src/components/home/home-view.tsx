@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { HomeViewClient } from "./home-view-client";
 import { SuspenseErrorBoundary } from "../suspense-error-boundary";
+import { HomeFilters } from "./home-filters";
 
 export const HomeView = ({
   searchParams,
@@ -26,6 +27,17 @@ export const HomeView = ({
 const HomeViewLoading = () => {
   return (
     <div className="w-full space-y-4">
+      <div className="my-8 space-y-4">
+        <Skeleton className="h-10 w-full rounded-md" />
+        <div className="flex flex-wrap gap-2">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Skeleton
+              key={`home-filters-skeleton-${index}`}
+              className="h-10 w-24 rounded-lg"
+            />
+          ))}
+        </div>
+      </div>
       <div className="grid grid-cols-1 gap-2">
         {Array.from({ length: 6 }).map((_, index) => (
           <div
@@ -73,5 +85,10 @@ const HomeViewSuspense = async ({
 }) => {
   const filters = await loadSearchParams(searchParams);
   const data = await getQuestions(filters);
-  return <HomeViewClient data={data} />;
+  return (
+    <div>
+      <HomeFilters />
+      <HomeViewClient data={data} />
+    </div>
+  );
 };

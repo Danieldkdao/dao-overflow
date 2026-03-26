@@ -2,7 +2,7 @@
 
 import { db } from "@/db/db";
 import { PAGE_SIZE, QUESTIONS_FILTERS, UNAUTHED_MESSAGE } from "../constants";
-import { checkUserAuthed } from "./user.action";
+import { checkUserAuthed } from "./auth.action";
 import {
   AnswerTable,
   CollectionTable,
@@ -26,6 +26,8 @@ import {
 import { auth } from "../auth/auth";
 import { GetActionOutput } from "../types";
 import { headers } from "next/headers";
+import { cacheTag } from "next/cache";
+import { getCollectionUserTag, revalidateCollectionCache } from "../cache";
 
 export const updateCollectionAction = async (questionId: string) => {
   try {
@@ -74,6 +76,11 @@ export const updateCollectionAction = async (questionId: string) => {
       });
     }
 
+    revalidateCollectionCache({
+      userId: session.user.id,
+      questionId,
+    });
+
     return { error: false, message: "Collection updated successfully!" };
   } catch (error) {
     console.error(error);
@@ -93,13 +100,24 @@ type GetCollectionActionProps = {
 export const getCollectionAction = async (
   filters: GetCollectionActionProps,
 ) => {
-  const { query, page, filter } = filters;
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) return null;
+  console.log("Ran");
+  return getCollectionDataCached(session.user.id, filters);
+};
+
+const getCollectionDataCached = async (
+  userId: string,
+  filters: GetCollectionActionProps,
+) => {
+  "use cache";
+
+  const { query, page, filter } = filters;
   if (page < 1) return null;
 
-  const offset = (page - 1) * PAGE_SIZE;
+  cacheTag(getCollectionUserTag(userId));
 
+  const offset = (page - 1) * PAGE_SIZE;
   const voteCount = sql<number>`(
         SELECT COUNT(*)
         FROM ${QuestionVoteTable} qvt
@@ -155,7 +173,7 @@ export const getCollectionAction = async (
     .leftJoin(TagTable, eq(TagTable.id, QuestionTagTable.tagId))
     .where(
       and(
-        eq(CollectionTable.userId, session.user.id),
+        eq(CollectionTable.userId, userId),
         query ? ilike(QuestionTable.title, `%${query}%`) : undefined,
       ),
     )
@@ -175,7 +193,7 @@ export const getCollectionAction = async (
     )
     .where(
       and(
-        eq(CollectionTable.userId, session.user.id),
+        eq(CollectionTable.userId, userId),
         query ? ilike(QuestionTable.title, `%${query}%`) : undefined,
       ),
     );

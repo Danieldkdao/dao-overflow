@@ -1,3 +1,6 @@
+"use client";
+
+import { useTheme } from "next-themes";
 import Image from "next/image";
 
 type EmptyStateProps = {
@@ -6,10 +9,16 @@ type EmptyStateProps = {
 };
 
 export const EmptyState = ({ title, description }: EmptyStateProps) => {
+  const { resolvedTheme } = useTheme();
+
   return (
     <div className="w-full p-5 rounded-xl border border-dashed bg-card flex flex-col items-center gap-2">
       <Image
-        src="/images/dark-illustration.png"
+        src={
+          resolvedTheme === "dark"
+            ? "/images/dark-illustration.png"
+            : "/images/light-illustration.png"
+        }
         alt="Dark illustration image"
         width={200}
         height={150}

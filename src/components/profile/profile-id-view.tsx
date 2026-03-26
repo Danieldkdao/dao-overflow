@@ -31,7 +31,7 @@ export const ProfileIdView = (props: ProfileIdViewProps) => {
   );
 };
 
-const ProfileIdLoading = () => {
+export const ProfileIdLoading = () => {
   return (
     <div className="space-y-8 animate-pulse">
       <div className="flex gap-4 justify-between items-start flex-wrap">
@@ -101,17 +101,17 @@ const ProfileIdSuspense = async ({ params }: ProfileIdViewProps) => {
 
   const badgeMap = [
     {
-      image: "/gold-medal.svg",
+      image: "/images/gold-medal.svg",
       label: "Gold",
       data: profileData.GOLD,
     },
     {
-      image: "/silver-medal.svg",
+      image: "/images/silver-medal.svg",
       label: "Silver",
       data: profileData.SILVER,
     },
     {
-      image: "/bronze-medal.svg",
+      image: "/images/bronze-medal.svg",
       label: "Bronze",
       data: profileData.BRONZE,
     },

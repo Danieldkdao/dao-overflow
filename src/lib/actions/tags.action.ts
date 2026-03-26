@@ -22,14 +22,20 @@ import {
 } from "drizzle-orm";
 import { PAGE_SIZE, TAGS_FILTERS } from "../constants";
 import { GetActionOutput } from "../types";
+import { cacheTag } from "next/cache";
+import { getTagGlobalTag, getTagIdTag, getTagQuestionsTag } from "../cache";
 
 export const getPopularTags = async () => {
+  "use cache";
+
+  cacheTag(getTagGlobalTag());
+
   const questionCount = sql<number>`(
       SELECT COUNT(*)
       FROM ${QuestionTagTable} qtt
       WHERE qtt.tag_id = ${TagTable.id}
     )`;
-  const tags = await db
+  return db
     .select({
       id: TagTable.id,
       name: TagTable.name,
@@ -38,8 +44,6 @@ export const getPopularTags = async () => {
     .from(TagTable)
     .orderBy(desc(questionCount), desc(TagTable.id))
     .limit(6);
-
-  return tags;
 };
 
 type GetTagsProps = {
@@ -49,7 +53,10 @@ type GetTagsProps = {
 };
 
 export const getTags = async (filters: GetTagsProps) => {
+  "use cache";
+
   const { query, page, filter } = filters;
+  cacheTag(getTagGlobalTag());
 
   const offset = (page - 1) * PAGE_SIZE;
 
@@ -107,7 +114,12 @@ type GetTagProps = {
 };
 
 export const getTagQuestions = async (props: GetTagProps) => {
+  "use cache";
+
   const { tagId, query, page } = props;
+  cacheTag(getTagGlobalTag());
+  cacheTag(getTagIdTag(tagId));
+  cacheTag(getTagQuestionsTag(tagId));
 
   const offset = (page - 1) * PAGE_SIZE;
 

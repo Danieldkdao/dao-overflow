@@ -52,6 +52,22 @@ const links = [
   },
 ];
 
+export const NavlinksSkeleton = () => {
+  return (
+    <div className="flex h-full flex-col gap-1 flex-1 overflow-y-auto">
+      {links.map((link) => (
+        <div
+          key={link.label}
+          className="px-2 py-3 rounded-lg flex items-center gap-3"
+        >
+          <div className="size-5 rounded-md bg-muted animate-pulse shrink-0" />
+          <div className="h-5 w-24 rounded-md bg-muted animate-pulse" />
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export const Navlinks = ({
   setOpen,
 }: {

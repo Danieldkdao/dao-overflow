@@ -5,6 +5,8 @@ import { GlobalSearchType } from "../types";
 import { db } from "@/db/db";
 import { ilike, sql } from "drizzle-orm";
 import { PgTableWithColumns } from "drizzle-orm/pg-core";
+import { cacheTag } from "next/cache";
+import { getGlobalSearchTag } from "../cache";
 
 type GetGlobalSearchResults = {
   q: string;
@@ -15,7 +17,7 @@ type GlobalSearchTypeQueryMap = {
   type: GlobalSearchType;
   id: string;
   table: PgTableWithColumns<any>;
-  query: keyof PgTableWithColumns<any>;
+  query: string;
 };
 
 export type GlobalSearchResultsType = {
@@ -28,6 +30,10 @@ export const getGlobalSearchResults = async ({
   q,
   type,
 }: GetGlobalSearchResults) => {
+  "use cache";
+
+  cacheTag(getGlobalSearchTag());
+
   const globalSearchTypesQueryMap: GlobalSearchTypeQueryMap[] = [
     { type: "question", table: QuestionTable, query: "title", id: "id" },
     {

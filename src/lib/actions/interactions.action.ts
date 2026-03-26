@@ -2,7 +2,8 @@
 
 import { db } from "@/db/db";
 import { InteractionTable, InteractionAction } from "@/db/schema";
-import { checkUserAuthed } from "./user.action";
+import { checkUserAuthed } from "./auth.action";
+import { revalidateInteractionCache } from "../cache";
 
 type CreateInteractionProps = {
   action: InteractionAction;
@@ -17,5 +18,10 @@ export const createInteraction = async (props: CreateInteractionProps) => {
   await db.insert(InteractionTable).values({
     userId: session.user.id,
     ...props,
+  });
+
+  revalidateInteractionCache({
+    userId: session.user.id,
+    questionId: props.questionId,
   });
 };

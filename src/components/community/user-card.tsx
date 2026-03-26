@@ -1,13 +1,16 @@
+"use client";
+
 import { GetUsersOutput } from "@/lib/actions/user.action";
-import { UserAvatar } from "../user-avatar";
 import Link from "next/link";
-import { Tag } from "../tags/tag";
+import { useRouter } from "next/navigation";
+import { UserAvatar } from "../user-avatar";
 
 export const UserCard = ({
   user,
 }: {
   user: NonNullable<GetUsersOutput>["users"][number];
 }) => {
+  const router = useRouter();
   return (
     <Link href={`/profile/${user.id}`} className="block w-full min-w-0">
       <div className="p-6 rounded-xl border flex flex-col items-center gap-2 w-full max-w-full min-w-0">
@@ -26,12 +29,13 @@ export const UserCard = ({
         <div className="w-full flex items-center gap-2 justify-center">
           {user.topTags.length ? (
             user.topTags.map((t) => (
-              <Tag
+              <div
                 key={t.id}
-                id={t.id}
-                name={t.name}
                 className="bg-sidebar max-w-1/3 truncate w-full rounded-md p-2 text-xs text-muted-foreground block text-left"
-              />
+                onClick={() => router.push(`/tags/${t.id}`)}
+              >
+                {t.name}
+              </div>
             ))
           ) : (
             <div className="bg-sidebar truncate w-fit rounded-md p-2 text-xs text-muted-foreground">

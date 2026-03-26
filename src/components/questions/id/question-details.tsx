@@ -29,7 +29,7 @@ import { Tag } from "@/components/tags/tag";
 export const QuestionDetails = ({
   question,
 }: {
-  question: GetQuestionOutputType;
+  question: NonNullable<GetQuestionOutputType>;
 }) => {
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);

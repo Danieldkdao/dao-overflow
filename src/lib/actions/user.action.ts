@@ -25,6 +25,16 @@ import { headers } from "next/headers";
 import { auth } from "../auth/auth";
 import { BADGE_CRITERIA, COMMUNITY_FILTERS, PAGE_SIZE } from "../constants";
 import { GetActionOutput } from "../types";
+import { checkUserAuthed } from "./auth.action";
+import { cacheTag } from "next/cache";
+import {
+  getUserAnswersTag,
+  getUserGlobalTag,
+  getUserIdTag,
+  getUserQuestionsTag,
+  revalidateSearchCache,
+  revalidateUserCache,
+} from "../cache";
 
 export const onboardUser = async (username: string) => {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -51,6 +61,10 @@ export const onboardUser = async (username: string) => {
     if (!updatedUser) {
       throw new Error("Failed to update user");
     }
+
+    revalidateUserCache(session.user.id);
+    revalidateSearchCache();
+
     return { error: false, message: "Onboarding process complete!" };
   } catch (error) {
     const typedError = error as { cause: { code: string } };
@@ -81,8 +95,12 @@ export const fetchUsers = async (
   query: string,
   filter: UserFilterType,
 ) => {
+  "use cache";
+
   if (page < 1) return null;
   const offset = (page - 1) * PAGE_SIZE;
+
+  cacheTag(getUserGlobalTag());
 
   const filterMap = {
     new_users: [desc(user.createdAt), desc(user.id)],
@@ -148,13 +166,24 @@ export const fetchUsers = async (
 
 export type GetUsersOutput = GetActionOutput<typeof fetchUsers>;
 
-export const checkUserAuthed = async () => {
-  const session = await auth.api.getSession({ headers: await headers() });
-  return session;
-};
-
 export const getUserProfile = async (userId: string) => {
   const session = await checkUserAuthed();
+  const userProfile = await getUserProfileCached(userId);
+  if (!userProfile) {
+    throw new Error("User profile not found.");
+  }
+
+  const isCurrentUser = session?.user.id === userId;
+
+  return { ...userProfile, isCurrentUser };
+};
+
+const getUserProfileCached = async (userId: string) => {
+  "use cache";
+
+  cacheTag(getUserIdTag(userId));
+  cacheTag(getUserQuestionsTag(userId));
+  cacheTag(getUserAnswersTag(userId));
 
   const [userProfile] = await db
     .select({
@@ -372,6 +401,10 @@ export const getUserProfile = async (userId: string) => {
     .from(user)
     .where(eq(user.id, userId));
 
+  if (!userProfile) {
+    throw new Error("User profile not found.");
+  }
+
   const criteriaMap = [
     {
       criteria: BADGE_CRITERIA.QUESTION_COUNT,
@@ -407,9 +440,7 @@ export const getUserProfile = async (userId: string) => {
     }
   }
 
-  const isCurrentUser = session?.user.id === userId;
-
-  return { ...userProfile, ...badgeCount, isCurrentUser };
+  return { ...userProfile, ...badgeCount };
 };
 
 export type GetUserProfileOutputType = GetActionOutput<typeof getUserProfile>;

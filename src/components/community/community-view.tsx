@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { loadSearchParams } from "../../lib/params/community-params";
 import { CommunityViewClient } from "./community-view-client";
 import { SuspenseErrorBoundary } from "../suspense-error-boundary";
+import { CommunityFilters } from "./community-filters";
 
 export const CommunityView = ({
   searchParams,
@@ -25,17 +26,23 @@ export const CommunityView = ({
 
 const CommunityViewSkeleton = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
-      {Array.from({ length: 10 }).map((_, index) => (
-        <div
-          key={`community-skeleton-${index}`}
-          className="p-6 rounded-xl border flex flex-col items-center gap-2 w-full max-w-full"
-        >
-          <Skeleton className="size-20 rounded-full" />
-          <Skeleton className="h-6 w-3/4" />
-          <Skeleton className="h-4 w-1/2" />
-        </div>
-      ))}
+    <div className="space-y-8">
+      <div className="flex flex-col sm:flex-row items-center gap-4 mb-8">
+        <Skeleton className="h-10 w-full rounded-md" />
+        <Skeleton className="h-10 w-full sm:w-44 rounded-md" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+        {Array.from({ length: 10 }).map((_, index) => (
+          <div
+            key={`community-skeleton-${index}`}
+            className="p-6 rounded-xl border flex flex-col items-center gap-2 w-full max-w-full"
+          >
+            <Skeleton className="size-20 rounded-full" />
+            <Skeleton className="h-6 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
@@ -48,5 +55,10 @@ const CommunityViewSuspense = async ({
   const filters = await loadSearchParams(searchParams);
   const data = await fetchUsers(filters.page, filters.query, filters.filter);
 
-  return <CommunityViewClient data={data} />;
+  return (
+    <div>
+      <CommunityFilters />
+      <CommunityViewClient data={data} />
+    </div>
+  );
 };

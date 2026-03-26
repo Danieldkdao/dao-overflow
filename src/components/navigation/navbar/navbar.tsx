@@ -6,15 +6,26 @@ import { SidebarSheet } from "../sidebar/sidebar-sheet";
 import { NavbarUser } from "./navbar-user";
 import { useTheme } from "next-themes";
 import { GlobalSearchInput } from "@/components/general/global-search-input";
+import { Suspense } from "react";
+
+const GlobalSearchFallback = () => {
+  return (
+    <div className="hidden md:block w-full max-w-[550px]">
+      <div className="h-[52px] rounded-lg border border-border bg-background dark:bg-input/40" />
+    </div>
+  );
+};
 
 export const Navbar = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   return (
     <div className="flex items-center justify-between py-4 px-6 border-b bg-sidebar">
       <Image
         src={
-          theme === "light" ? "/images/logo-light.svg" : "/images/logo-dark.svg"
+          resolvedTheme === "light"
+            ? "/images/logo-light.svg"
+            : "/images/logo-dark.svg"
         }
         alt="Logo image"
         width={200}
@@ -28,7 +39,9 @@ export const Navbar = () => {
         height={35}
         className="lg:hidden"
       />
-      <GlobalSearchInput />
+      <Suspense fallback={<GlobalSearchFallback />}>
+        <GlobalSearchInput />
+      </Suspense>
 
       <div className="flex items-center gap-4">
         <ThemeToggle />

@@ -43,7 +43,7 @@ export const GlobalSearchInput = () => {
         />
       </div>
       {open && filters.q.trim() && (
-        <div className="absolute top-[110%] rounded-lg bg-background dark:bg-input border border-border right-0 left-0">
+        <div className="absolute top-[110%] z-1000 rounded-lg bg-background dark:bg-input border border-border right-0 left-0">
           <GlobalSearchFilters />
           <hr className="w-full" />
           <div className="py-5 space-y-4">

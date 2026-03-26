@@ -1,6 +1,5 @@
 "use client";
 
-import { TriangleAlertIcon } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -9,6 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
+import Image from "next/image";
 
 type ErrorStateProps = {
   title: string;
@@ -23,6 +24,7 @@ export const ErrorState = ({
   fullScreen = false,
   className,
 }: ErrorStateProps) => {
+  const { resolvedTheme } = useTheme();
   return (
     <div
       className={cn(
@@ -33,9 +35,16 @@ export const ErrorState = ({
     >
       <Card className="w-full max-w-xl border-destructive/25 bg-destructive/5 shadow-none">
         <CardHeader className="flex flex-col items-center text-center">
-          <div className="flex size-14 items-center justify-center rounded-2xl border border-destructive/20 bg-destructive/10">
-            <TriangleAlertIcon className="size-7 text-destructive" />
-          </div>
+          <Image
+            src={
+              resolvedTheme === "dark"
+                ? "/images/dark-error.png"
+                : "/images/light-error.png"
+            }
+            alt="Error Image"
+            width={200}
+            height={200}
+          />
           <CardTitle className="text-xl text-destructive">{title}</CardTitle>
           <CardDescription className="max-w-lg text-sm leading-6">
             {description}

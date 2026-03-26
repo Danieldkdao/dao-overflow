@@ -8,10 +8,10 @@ import {
   SheetTitle,
 } from "../../ui/sheet";
 import Image from "next/image";
-import { Navlinks } from "../navbar/nav-links";
+import { Navlinks, NavlinksSkeleton } from "../navbar/nav-links";
 import Link from "next/link";
 import { authClient } from "@/lib/auth/auth-client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 export const SidebarSheet = () => {
   const { data: session } = authClient.useSession();
@@ -34,7 +34,9 @@ export const SidebarSheet = () => {
           />
         </SheetHeader>
         <div className="px-4">
-          <Navlinks setOpen={setOpen} />
+          <Suspense fallback={<NavlinksSkeleton />}>
+            <Navlinks setOpen={setOpen} />
+          </Suspense>
           {!session && (
             <div className="flex flex-col gap-2">
               <Link href="/sign-in">
